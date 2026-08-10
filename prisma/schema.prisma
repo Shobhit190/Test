@@ -1,0 +1,179 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum SystemRole {
+  EMPLOYEE
+  MANAGER
+  HR_ADMIN
+}
+
+enum GoalStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  RETURNED
+}
+
+enum ApprovalAction {
+  SUBMIT
+  APPROVE
+  RETURN
+}
+
+enum CompetencyLevelCode {
+  A
+  B
+  C
+  D
+  E
+}
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  name         String
+  passwordHash String
+  systemRole   SystemRole @default(EMPLOYEE)
+
+  designationId String?
+  designation   Designation? @relation(fields: [designationId], references: [id])
+
+  managerId String?
+  manager   User?  @relation("ManagerReports", fields: [managerId], references: [id])
+  reports   User[] @relation("ManagerReports")
+
+  goals           Goal[]
+  approvalActions ApprovalHistory[] @relation("Actor")
+
+  createdAt DateTime @default(now())
+}
+
+model Designation {
+  id   String @id @default(cuid())
+  name String @unique
+
+  roleCompetencies RoleCompetencyMap[]
+  users            User[]
+}
+
+model Competency {
+  id            String  @id @default(cuid())
+  name          String
+  cluster       String?
+  subCluster    String?
+  isCore        Boolean @default(false)
+  definition    String?
+  keyBehaviours String?
+
+  levels   CompetencyLevel[]
+  roleMaps RoleCompetencyMap[]
+  ratings  CompetencyRating[]
+
+  @@unique([name, subCluster])
+}
+
+model CompetencyLevel {
+  id           String              @id @default(cuid())
+  competencyId String
+  competency   Competency          @relation(fields: [competencyId], references: [id], onDelete: Cascade)
+  level        CompetencyLevelCode
+  subLevelMin  Int
+  subLevelMax  Int
+  levelName    String
+
+  behaviourIndicators String[]
+
+  @@unique([competencyId, level])
+}
+
+model RoleCompetencyMap {
+  id            String      @id @default(cuid())
+  designationId String
+  designation   Designation @relation(fields: [designationId], references: [id], onDelete: Cascade)
+  competencyId  String
+  competency    Competency  @relation(fields: [competencyId], references: [id], onDelete: Cascade)
+  isRequired    Boolean     @default(true)
+  notes         String?
+
+  @@unique([designationId, competencyId])
+}
+
+model GoalCycle {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  startDate DateTime
+  endDate   DateTime
+  isActive  Boolean  @default(true)
+
+  goals Goal[]
+}
+
+model Goal {
+  id         String     @id @default(cuid())
+  employeeId String
+  employee   User       @relation(fields: [employeeId], references: [id])
+  cycleId    String
+  cycle      GoalCycle  @relation(fields: [cycleId], references: [id])
+  status     GoalStatus @default(DRAFT)
+
+  kras              KRA[]
+  competencyRatings CompetencyRating[]
+  approvalHistory   ApprovalHistory[]
+
+  submittedAt DateTime?
+  approvedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([employeeId, cycleId])
+}
+
+model KRA {
+  id          String  @id @default(cuid())
+  goalId      String
+  goal        Goal    @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  weight      Int
+  order       Int     @default(0)
+
+  kpis KPI[]
+}
+
+model KPI {
+  id     String  @id @default(cuid())
+  kraId  String
+  kra    KRA     @relation(fields: [kraId], references: [id], onDelete: Cascade)
+  title  String
+  target String?
+  order  Int     @default(0)
+}
+
+model CompetencyRating {
+  id           String     @id @default(cuid())
+  goalId       String
+  goal         Goal       @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  competencyId String
+  competency   Competency @relation(fields: [competencyId], references: [id])
+  subLevel     Int
+  selfComment  String?
+
+  @@unique([goalId, competencyId])
+}
+
+model ApprovalHistory {
+  id        String         @id @default(cuid())
+  goalId    String
+  goal      Goal           @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  action    ApprovalAction
+  actorId   String
+  actor     User           @relation("Actor", fields: [actorId], references: [id])
+  comment   String?
+  createdAt DateTime       @default(now())
+}
