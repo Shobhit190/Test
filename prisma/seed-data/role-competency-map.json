@@ -1,1 +1,651 @@
-PLACEHOLDER
+{
+  "competencyColumns": [
+    "Strategic Thinking & Foresight",
+    "Emotional Intelligence",
+    "Influential Communication",
+    "Mentoring & Coaching",
+    "Financial & Commercial Prudence",
+    "Ambiguity Navigation",
+    "Bridge-Builder Mindset",
+    "Result Orientation (Bias for Action)",
+    "Problem Solving",
+    "Student/Education-First Integrity",
+    "Ownership",
+    "Process Orientation",
+    "True North Mindset",
+    "Quality Mindset",
+    "Attention to Detail",
+    "Data Analysis",
+    "Adaptive Agility",
+    "Openness to Learnings",
+    "Tech-Ed Foresight"
+  ],
+  "roles": [
+    {
+      "designation": "Business Head,Vedam, Mirai, ALTA, Stride",
+      "requiredCompetencies": [
+        "Strategic Thinking & Foresight",
+        "Emotional Intelligence",
+        "Influential Communication",
+        "Mentoring & Coaching",
+        "Financial & Commercial Prudence",
+        "Ambiguity Navigation",
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Problem Solving",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "Data Analysis"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Head Of Growth Vedam, ALTA, Mirai",
+      "requiredCompetencies": [
+        "Strategic Thinking & Foresight",
+        "Emotional Intelligence",
+        "Influential Communication",
+        "Mentoring & Coaching",
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "Quality Mindset",
+        "Data Analysis"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Head Product",
+      "requiredCompetencies": [
+        "Strategic Thinking & Foresight",
+        "Influential Communication",
+        "Mentoring & Coaching",
+        "Ambiguity Navigation",
+        "Bridge-Builder Mindset",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "Quality Mindset",
+        "Data Analysis",
+        "Tech-Ed Foresight"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "DVP Engineering",
+      "requiredCompetencies": [
+        "Emotional Intelligence",
+        "Mentoring & Coaching",
+        "Bridge-Builder Mindset",
+        "Problem Solving",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "Data Analysis",
+        "Tech-Ed Foresight"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Software Architect / Director of Engineering",
+      "requiredCompetencies": [
+        "Strategic Thinking & Foresight",
+        "Mentoring & Coaching",
+        "Bridge-Builder Mindset",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "Quality Mindset",
+        "Data Analysis",
+        "Adaptive Agility",
+        "Tech-Ed Foresight"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Head of Education/ Delivery Head",
+      "requiredCompetencies": [
+        "Emotional Intelligence",
+        "Influential Communication",
+        "Mentoring & Coaching",
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "Quality Mindset",
+        "Data Analysis"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Executive Director City Leadership & Vedam",
+      "requiredCompetencies": [
+        "Strategic Thinking & Foresight",
+        "Emotional Intelligence",
+        "Mentoring & Coaching",
+        "Financial & Commercial Prudence",
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "Quality Mindset",
+        "Data Analysis"
+      ],
+      "notes": "Focus on student acquisition, NPS, campus"
+    },
+    {
+      "designation": "Alliance",
+      "requiredCompetencies": [
+        "Emotional Intelligence",
+        "Influential Communication",
+        "Financial & Commercial Prudence",
+        "Bridge-Builder Mindset",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "Quality Mindset",
+        "Data Analysis"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Regional Director",
+      "requiredCompetencies": [
+        "Emotional Intelligence",
+        "Mentoring & Coaching",
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Student/Education-First Integrity",
+        "Ownership",
+        "Process Orientation",
+        "Quality Mindset",
+        "Attention to Detail",
+        "Adaptive Agility"
+      ],
+      "notes": "Mainly focussed on building relationship"
+    },
+    {
+      "designation": "Academic Head",
+      "requiredCompetencies": [
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Problem Solving",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "Quality Mindset",
+        "Data Analysis",
+        "Adaptive Agility",
+        "Tech-Ed Foresight"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Campus Head",
+      "requiredCompetencies": [
+        "Influential Communication",
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Problem Solving",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "Quality Mindset",
+        "Data Analysis",
+        "Tech-Ed Foresight"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Area Sales Manager",
+      "requiredCompetencies": [
+        "Emotional Intelligence",
+        "Influential Communication",
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "Data Analysis",
+        "Tech-Ed Foresight"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Acquisition Head",
+      "requiredCompetencies": [
+        "Emotional Intelligence",
+        "Financial & Commercial Prudence",
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Problem Solving",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "Quality Mindset",
+        "Data Analysis",
+        "Adaptive Agility"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Training Head",
+      "requiredCompetencies": [
+        "Influential Communication",
+        "Mentoring & Coaching",
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Problem Solving",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "Quality Mindset",
+        "Data Analysis",
+        "Adaptive Agility",
+        "Tech-Ed Foresight"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Head Placements",
+      "requiredCompetencies": [
+        "Strategic Thinking & Foresight",
+        "Influential Communication",
+        "Mentoring & Coaching",
+        "Financial & Commercial Prudence",
+        "Bridge-Builder Mindset",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "Quality Mindset",
+        "Data Analysis",
+        "Tech-Ed Foresight"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Placements",
+      "requiredCompetencies": [
+        "Emotional Intelligence",
+        "Influential Communication",
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Problem Solving",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "Quality Mindset",
+        "Adaptive Agility"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Zonal Head-crc",
+      "requiredCompetencies": [
+        "Emotional Intelligence",
+        "Influential Communication",
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Problem Solving",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "Quality Mindset",
+        "Data Analysis",
+        "Adaptive Agility"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Lead Investor Relations",
+      "requiredCompetencies": [
+        "Strategic Thinking & Foresight",
+        "Influential Communication",
+        "Bridge-Builder Mindset",
+        "Problem Solving",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "Quality Mindset"
+      ],
+      "notes": "Student first doesn't apply to her"
+    },
+    {
+      "designation": "Lead Data & Systems",
+      "requiredCompetencies": [
+        "Bridge-Builder Mindset",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "Quality Mindset",
+        "Attention to Detail",
+        "Data Analysis",
+        "Adaptive Agility"
+      ],
+      "notes": "Data analysis, develop admission processes and apply to other places, Adaptability"
+    },
+    {
+      "designation": "Head Human Resource & Admin",
+      "requiredCompetencies": [
+        "Strategic Thinking & Foresight",
+        "Emotional Intelligence",
+        "Influential Communication",
+        "Mentoring & Coaching",
+        "Financial & Commercial Prudence",
+        "Ambiguity Navigation",
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Problem Solving",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "Data Analysis"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Human Resource Business Partner",
+      "requiredCompetencies": [
+        "Emotional Intelligence",
+        "Mentoring & Coaching",
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Problem Solving",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "True North Mindset",
+        "Quality Mindset",
+        "Data Analysis"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Team Lead - Talent Acquisition",
+      "requiredCompetencies": [
+        "Emotional Intelligence",
+        "Mentoring & Coaching",
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "True North Mindset",
+        "Quality Mindset",
+        "Data Analysis"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Programme Manager, Program, Mirai",
+      "requiredCompetencies": [
+        "Emotional Intelligence",
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "True North Mindset",
+        "Quality Mindset",
+        "Attention to Detail",
+        "Data Analysis",
+        "Adaptive Agility"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Team Lead-Programme",
+      "requiredCompetencies": [
+        "Emotional Intelligence",
+        "Mentoring & Coaching",
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "Quality Mindset",
+        "Attention to Detail",
+        "Data Analysis"
+      ],
+      "notes": "Training for acquisition team, SAT Test,Training to BDM and counsellors, Delhi NCR- online and in person both, Meet Goal of the company, Role Play, Operation- vendor management, help RD"
+    },
+    {
+      "designation": "Head Campus Operations",
+      "requiredCompetencies": [
+        "Emotional Intelligence",
+        "Mentoring & Coaching",
+        "Financial & Commercial Prudence",
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Problem Solving",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "True North Mindset",
+        "Quality Mindset"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Campus Head (CCM)",
+      "requiredCompetencies": [
+        "Emotional Intelligence",
+        "Mentoring & Coaching",
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Problem Solving",
+        "Student/Education-First Integrity",
+        "Ownership",
+        "Process Orientation",
+        "Quality Mindset",
+        "Data Analysis"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Director (CCM)",
+      "requiredCompetencies": [
+        "Emotional Intelligence",
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Student/Education-First Integrity",
+        "Ownership",
+        "Process Orientation",
+        "Quality Mindset",
+        "Adaptive Agility",
+        "Openness to Learnings"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Operation Excellence and QA Assurance",
+      "requiredCompetencies": [
+        "Emotional Intelligence",
+        "Mentoring & Coaching",
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Problem Solving",
+        "Student/Education-First Integrity",
+        "Ownership",
+        "Process Orientation",
+        "Quality Mindset",
+        "Data Analysis",
+        "Adaptive Agility"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Lead L&O Operations",
+      "requiredCompetencies": [
+        "Mentoring & Coaching",
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Problem Solving",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "Quality Mindset",
+        "Data Analysis",
+        "Adaptive Agility",
+        "Openness to Learnings",
+        "Tech-Ed Foresight"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Lead Feedback Systems",
+      "requiredCompetencies": [
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Problem Solving",
+        "Student/Education-First Integrity",
+        "Ownership",
+        "Process Orientation",
+        "Quality Mindset",
+        "Attention to Detail",
+        "Data Analysis",
+        "Tech-Ed Foresight"
+      ],
+      "notes": "Designing projects"
+    },
+    {
+      "designation": "Content Specialist",
+      "requiredCompetencies": [
+        "Emotional Intelligence",
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Student/Education-First Integrity",
+        "Ownership",
+        "Process Orientation",
+        "Quality Mindset",
+        "Attention to Detail",
+        "Data Analysis",
+        "Adaptive Agility",
+        "Tech-Ed Foresight"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Business Analyst",
+      "requiredCompetencies": [
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Student/Education-First Integrity",
+        "Ownership",
+        "Process Orientation",
+        "True North Mindset",
+        "Quality Mindset",
+        "Attention to Detail",
+        "Data Analysis",
+        "Openness to Learnings"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Growth Performance",
+      "requiredCompetencies": [
+        "Strategic Thinking & Foresight",
+        "Financial & Commercial Prudence",
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "Attention to Detail",
+        "Data Analysis",
+        "Adaptive Agility",
+        "Tech-Ed Foresight"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "You Tube Head",
+      "requiredCompetencies": [
+        "Financial & Commercial Prudence",
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "Attention to Detail",
+        "Data Analysis",
+        "Adaptive Agility",
+        "Tech-Ed Foresight"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Lead Graphic Designer",
+      "requiredCompetencies": [
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "Attention to Detail",
+        "Data Analysis",
+        "Adaptive Agility"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Head Finance & Legal",
+      "requiredCompetencies": [
+        "Strategic Thinking & Foresight",
+        "Influential Communication",
+        "Mentoring & Coaching",
+        "Financial & Commercial Prudence",
+        "Ambiguity Navigation",
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "Attention to Detail",
+        "Data Analysis"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Financial Controller",
+      "requiredCompetencies": [
+        "Strategic Thinking & Foresight",
+        "Mentoring & Coaching",
+        "Financial & Commercial Prudence",
+        "Bridge-Builder Mindset",
+        "Problem Solving",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "Quality Mindset",
+        "Attention to Detail",
+        "Data Analysis"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Lead Revenue & Cost Assurance",
+      "requiredCompetencies": [
+        "Mentoring & Coaching",
+        "Financial & Commercial Prudence",
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Student/Education-First Integrity",
+        "Process Orientation",
+        "Quality Mindset",
+        "Attention to Detail",
+        "Data Analysis"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Fp&A Manager",
+      "requiredCompetencies": [
+        "Mentoring & Coaching",
+        "Financial & Commercial Prudence",
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Student/Education-First Integrity",
+        "Ownership",
+        "Process Orientation",
+        "Quality Mindset",
+        "Attention to Detail",
+        "Data Analysis",
+        "Adaptive Agility"
+      ],
+      "notes": null
+    },
+    {
+      "designation": "Lead Financial Reporting & Indirect Taxation",
+      "requiredCompetencies": [
+        "Mentoring & Coaching",
+        "Financial & Commercial Prudence",
+        "Bridge-Builder Mindset",
+        "Result Orientation (Bias for Action)",
+        "Student/Education-First Integrity",
+        "Ownership",
+        "Process Orientation",
+        "Quality Mindset",
+        "Attention to Detail",
+        "Data Analysis",
+        "Adaptive Agility"
+      ],
+      "notes": null
+    }
+  ]
+}
