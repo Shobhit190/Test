@@ -1,1 +1,1589 @@
-PLACEHOLDER
+{
+  "proficiencyScale": [
+    {
+      "level": "A",
+      "subLevel": 1,
+      "levelName": "Foundation",
+      "description": "Understands basics, follows instructions"
+    },
+    {
+      "level": "A",
+      "subLevel": 2,
+      "levelName": "Foundation",
+      "description": "Understands basics, follows instructions"
+    },
+    {
+      "level": "B",
+      "subLevel": 3,
+      "levelName": "Developing",
+      "description": "Applies skills with guidance, handles routine tasks, Manages self"
+    },
+    {
+      "level": "B",
+      "subLevel": 4,
+      "levelName": "Developing",
+      "description": "Applies skills with guidance, handles routine tasks, Manages self"
+    },
+    {
+      "level": "C",
+      "subLevel": 5,
+      "levelName": "On the Rise",
+      "description": "Independently delivers, solves standard problems of self and team"
+    },
+    {
+      "level": "C",
+      "subLevel": 6,
+      "levelName": "On the Rise",
+      "description": "Independently delivers, solves standard problems of self and team"
+    },
+    {
+      "level": "D",
+      "subLevel": 7,
+      "levelName": "Proficient",
+      "description": "Drives outcomes, mentors others, handles complexity of his function/ department"
+    },
+    {
+      "level": "D",
+      "subLevel": 8,
+      "levelName": "Proficient",
+      "description": "Drives outcomes, mentors others, handles complexity of his function/ department"
+    },
+    {
+      "level": "E",
+      "subLevel": 9,
+      "levelName": "Role Model",
+      "description": "Shapes strategy, influences organization-wide impact"
+    },
+    {
+      "level": "E",
+      "subLevel": 10,
+      "levelName": "Role Model",
+      "description": "Shapes strategy, influences organization-wide impact"
+    }
+  ],
+  "coreCompetencyNames": [
+    "Bridge-Builder Mindset",
+    "Student-First Integrity",
+    "Process Orientation"
+  ],
+  "competencies": [
+    {
+      "sno": "1",
+      "cluster": "The North Star Council",
+      "subCluster": "Leadership Skills",
+      "name": "Strategic Thinking & Foresight",
+      "isCore": false,
+      "definition": "The ability to anticipate future trends, industry needs, student expectations, and organisational risks, and to translate that foresight into clear strategies, priorities, and decisions that strengthen long-term outcomes.",
+      "keyBehaviours": [
+        "Spots patterns early and anticipates shifts in education, placements, admissions, and market dynamics.",
+        "Connects day-to-day decisions with long-term organisational goals.",
+        "Makes choices that balance immediate needs with future impact.",
+        "Designs scalable systems, processes, and models (e.g., CCM, L&O frameworks, product roadmaps).",
+        "Thinks beyond functional silos and considers the whole student lifecycle."
+      ],
+      "levels": [
+        {
+          "subLevelMin": 1,
+          "subLevelMax": 2,
+          "levelName": "Foundational",
+          "behaviourIndicators": [
+            "Waits for others to devise strategy",
+            "Understands immediate tasks but has limited visibility of long-term implications.",
+            "Relies on instructions for prioritisation.",
+            "Focuses on short-term execution without connecting to broader goals."
+          ],
+          "level": "A"
+        },
+        {
+          "subLevelMin": 3,
+          "subLevelMax": 4,
+          "levelName": "Developing",
+          "behaviourIndicators": [
+            "Approaches senior and asks questions to gain clarity, does not wait for others.",
+            "Begins to consider future implications of decisions.",
+            "Identifies basic trends when highlighted by others.",
+            "Aligns work with team goals but struggles to connect to larger organisational strategy."
+          ],
+          "level": "B"
+        },
+        {
+          "subLevelMin": 5,
+          "subLevelMax": 6,
+          "levelName": "On The rise",
+          "behaviourIndicators": [
+            "Anticipates near-term challenges and opportunities.",
+            "Connects daily work to organisational objectives.",
+            "Makes balanced decisions considering both short-term and medium-term impact.",
+            "Contributes ideas for improving processes."
+          ],
+          "level": "C"
+        },
+        {
+          "subLevelMin": 7,
+          "subLevelMax": 8,
+          "levelName": "Proficient",
+          "behaviourIndicators": [
+            "Proactively identifies emerging trends in education, student expectations, and market dynamics.",
+            "Designs scalable systems and frameworks.",
+            "Aligns cross-functional efforts with long-term strategy.",
+            "Makes decisions that optimise long-term value."
+          ],
+          "level": "D"
+        },
+        {
+          "subLevelMin": 9,
+          "subLevelMax": 10,
+          "levelName": "Role Model",
+          "behaviourIndicators": [
+            "Anticipates industry shifts well ahead of time and shapes organisational strategy.",
+            "Builds future-ready models and frameworks.",
+            "Influences leadership decisions with strategic foresight.",
+            "Creates long-term competitive advantage through innovation and holistic thinking across the student lifecycle."
+          ],
+          "level": "E"
+        }
+      ]
+    },
+    {
+      "sno": "2",
+      "cluster": "The North Star Council",
+      "subCluster": "Leadership Skills",
+      "name": "Emotional Intelligence",
+      "isCore": false,
+      "definition": "The ability to understand and manage one’s own emotions while accurately reading, empathising with, and responding to the emotions of others. Uses emotions to build trust, resolve conflict, and create psychologically safe, high-performance environments.",
+      "keyBehaviours": [
+        "Demonstrates emotional stability in high-pressure, fast-growth environments.",
+        "Listens deeply and responds with empathy, especially in context of student’s needs.",
+        "Manages conflict constructively and maintains composure during ambiguity.",
+        "Lean in with trust while working with teams, peers, partners, and campus stakeholders.",
+        "Adjusts communication and leadership style based on the audience."
+      ],
+      "levels": [
+        {
+          "subLevelMin": 1,
+          "subLevelMax": 2,
+          "levelName": "Foundational",
+          "behaviourIndicators": [
+            "Reacts impulsively under pressure.",
+            "Has limited awareness of own emotions and their impact on others.",
+            "Struggles to understand others’ perspectives.",
+            "Communication may lack sensitivity."
+          ],
+          "level": "A"
+        },
+        {
+          "subLevelMin": 3,
+          "subLevelMax": 4,
+          "levelName": "Developing",
+          "behaviourIndicators": [
+            "Shows basic self-awareness, not able to identify emotions but attempts to manage emotions.",
+            "Listens but may not fully empathise.",
+            "Handles simple conflicts with support.",
+            "Begins adapting communication style."
+          ],
+          "level": "B"
+        },
+        {
+          "subLevelMin": 5,
+          "subLevelMax": 6,
+          "levelName": "On The rise",
+          "behaviourIndicators": [
+            "Demonstrates emotional control in team- level situations.",
+            "Actively listens and shows empathy, especially towards students and team members.",
+            "Manages conflicts constructively within team.",
+            "Builds positive working relationships."
+          ],
+          "level": "C"
+        },
+        {
+          "subLevelMin": 7,
+          "subLevelMax": 8,
+          "levelName": "Proficient",
+          "behaviourIndicators": [
+            "Maintains composure in high-pressure and ambiguous environments.",
+            "Deeply understands others’ emotions and perspectives.",
+            "Builds strong trust across stakeholders.",
+            "Adapts leadership and communication style effectively across contexts."
+          ],
+          "level": "D"
+        },
+        {
+          "subLevelMin": 9,
+          "subLevelMax": 10,
+          "levelName": "Role Model",
+          "behaviourIndicators": [
+            "Creates psychologically safe, high-performance environments.",
+            "Anticipates emotional dynamics in teams and proactively addresses them.",
+            "Coaches others on emotional intelligence.",
+            "Builds strong, trust-based cultures across the organisation and external stakeholders."
+          ],
+          "level": "E"
+        }
+      ]
+    },
+    {
+      "sno": "3",
+      "cluster": "The North Star Council",
+      "subCluster": "Leadership Skills",
+      "name": "Influential Communication",
+      "isCore": false,
+      "definition": "The ability to communicate with clarity, conviction, and purpose in a way that inspires action, aligns stakeholders, and drives decisions across diverse teams and partner ecosystems.",
+      "keyBehaviours": [
+        "Communicates complex ideas simply and persuasively.",
+        "Aligns cross-functional teams (e.g., Admissions, L&O, Placements, Campus Ops).",
+        "Uses storytelling, data, and logic to influence decisions.",
+        "Navigates difficult conversations with honesty and tact.",
+        "Builds credibility through transparency, clarity, and consistency."
+      ],
+      "levels": [
+        {
+          "subLevelMin": 1,
+          "subLevelMax": 2,
+          "levelName": "Foundational",
+          "behaviourIndicators": [
+            "When asked, communicates basic information but lacks clarity and structure",
+            "Struggles to simplify complex ideas",
+            "Finds it difficult to influence or align others",
+            "Avoids or mishandles difficult conversations",
+            "Limited awareness of audience needs"
+          ],
+          "level": "A"
+        },
+        {
+          "subLevelMin": 3,
+          "subLevelMax": 4,
+          "levelName": "Developing",
+          "behaviourIndicators": [
+            "Communicates clearly in familiar situations",
+            "Attempts to simplify ideas but lacks consistency",
+            "Uses descriptive data only to support viewpoints",
+            "Participates in team discussions with support",
+            "Handles simple conversations but avoids high-stakes ones"
+          ],
+          "level": "B"
+        },
+        {
+          "subLevelMin": 5,
+          "subLevelMax": 6,
+          "levelName": "On The rise",
+          "behaviourIndicators": [
+            "Communicates ideas clearly, concisely, and persuasively",
+            "Aligns stakeholders within own function or team",
+            "Uses data, logic, and basic storytelling to influence decisions",
+            "Handles difficult conversations with tact and professionalism",
+            "Builds credibility through consistency and clarity"
+          ],
+          "level": "C"
+        },
+        {
+          "subLevelMin": 7,
+          "subLevelMax": 8,
+          "levelName": "Proficient",
+          "behaviourIndicators": [
+            "Simplifies complex, cross-functional problems into actionable narratives",
+            "Aligns multiple stakeholders across functions (Admissions, L&O, Placements, etc.)",
+            "Uses compelling storytelling combined with data to drive decisions",
+            "Navigates high-stakes or sensitive conversations with confidence and empathy",
+            "Builds strong credibility and trust across teams and partners"
+          ],
+          "level": "D"
+        },
+        {
+          "subLevelMin": 9,
+          "subLevelMax": 10,
+          "levelName": "Role Model",
+          "behaviourIndicators": [
+            "Shapes organisational narratives and drives large-scale alignment",
+            "Influences senior stakeholders and strategic decisions",
+            "Masters storytelling to inspire action across diverse audiences",
+            "Handles highly complex or conflict-heavy conversations with exceptional tact",
+            "Sets benchmarks for transparent, high-impact communication culture"
+          ],
+          "level": "E"
+        }
+      ]
+    },
+    {
+      "sno": "4",
+      "cluster": "The North Star Council",
+      "subCluster": "Leadership Skills",
+      "name": "Mentoring & Coaching",
+      "isCore": false,
+      "definition": "The ability to develop people by providing guidance, feedback, and opportunities that build capability, confidence, and career growth.",
+      "keyBehaviours": [
+        "Identifies strengths and development areas in team members. Calls a spade, a spade.",
+        "Provides structured, actionable feedback that improves performance.",
+        "Builds high-performance teams through coaching, delegation, and empowerment.",
+        "Creates learning pathways and growth opportunities (e.g., RD Academy, Faculty Academy).",
+        "Invests in long-term talent development and succession planning."
+      ],
+      "levels": [
+        {
+          "subLevelMin": 1,
+          "subLevelMax": 2,
+          "levelName": "Foundational",
+          "behaviourIndicators": [
+            "Focuses primarily on own tasks rather than team development",
+            "Struggles to identify strengths or gaps in others",
+            "Gives unstructured or infrequent feedback",
+            "Limited involvement in team capability building"
+          ],
+          "level": "A"
+        },
+        {
+          "subLevelMin": 3,
+          "subLevelMax": 4,
+          "levelName": "Developing",
+          "behaviourIndicators": [
+            "Supports team members when approached for help",
+            "Begins identifying basic strengths and development areas",
+            "Provides occasional feedback, though not always structured",
+            "Delegates simple tasks with guidance",
+            "Shows intent to support team growth"
+          ],
+          "level": "B"
+        },
+        {
+          "subLevelMin": 5,
+          "subLevelMax": 6,
+          "levelName": "On The rise",
+          "behaviourIndicators": [
+            "Regularly provides structured, actionable feedback",
+            "Identifies individual strengths and development areas",
+            "Coaches team members to improve performance",
+            "Delegates effectively and builds ownership",
+            "Contributes to development of team capability"
+          ],
+          "level": "C"
+        },
+        {
+          "subLevelMin": 7,
+          "subLevelMax": 8,
+          "levelName": "Proficient",
+          "behaviourIndicators": [
+            "Actively mentors individuals for long-term growth and career progression",
+            "Builds high-performance teams through coaching and empowerment",
+            "Designs learning opportunities (training, stretch roles, exposure)",
+            "Provides timely, impactful feedback that drives measurable improvement",
+            "Develops future leaders within the team"
+          ],
+          "level": "D"
+        },
+        {
+          "subLevelMin": 9,
+          "subLevelMax": 10,
+          "levelName": "Role Model",
+          "behaviourIndicators": [
+            "Builds strong coaching culture across teams and organisation",
+            "Designs structured development programs (e.g., academies, leadership pipelines)",
+            "Mentors high-potential talent and future leaders",
+            "Drives succession planning and long-term capability building",
+            "Recognised as a role model for people development and leadership growth"
+          ],
+          "level": "E"
+        }
+      ]
+    },
+    {
+      "sno": "5",
+      "cluster": "The North Star Council",
+      "subCluster": "Entrepreneurial Mindset",
+      "name": "Financial & Commercial Prudence",
+      "isCore": false,
+      "definition": "The ability to evaluate opportunities, risks, and decisions through a commercial lens — ensuring choices are financially sound, sustainable, and aligned with organisational goals.",
+      "keyBehaviours": [
+        "Understands revenue levers, cost structures, and P&L impact.",
+        "Makes decisions that balance growth with profitability.",
+        "Uses data and market insights to assess feasibility and ROI.",
+        "Anticipates financial implications of strategic choices."
+      ],
+      "levels": [
+        {
+          "subLevelMin": 1,
+          "subLevelMax": 2,
+          "levelName": "Foundational",
+          "behaviourIndicators": [
+            "Limited understanding of revenue, cost, and business impact",
+            "Focuses on tasks without considering financial implications",
+            "Relies on others for decision-making",
+            "Unable to assess basic trade-offs",
+            "No awareness of ROI or profitability"
+          ],
+          "level": "A"
+        },
+        {
+          "subLevelMin": 3,
+          "subLevelMax": 4,
+          "levelName": "Developing",
+          "behaviourIndicators": [
+            "Understands basic revenue and cost drivers",
+            "Considers financial impact when prompted",
+            "Uses simple data to support decisions",
+            "Begins to evaluate trade-offs between cost and outcomes",
+            "Requires guidance for financial decisions"
+          ],
+          "level": "B"
+        },
+        {
+          "subLevelMin": 5,
+          "subLevelMax": 6,
+          "levelName": "On The rise",
+          "behaviourIndicators": [
+            "Understands key business levers (revenue, cost, margins)",
+            "Makes decisions balancing growth and profitability",
+            "Uses data and insights to assess feasibility and ROI",
+            "Evaluates trade-offs in decision-making",
+            "Anticipates short- to mid-term financial implications"
+          ],
+          "level": "C"
+        },
+        {
+          "subLevelMin": 7,
+          "subLevelMax": 8,
+          "levelName": "Proficient",
+          "behaviourIndicators": [
+            "Applies strong commercial judgement in complex scenarios",
+            "Balances long-term profitability with growth opportunities",
+            "Uses data, trends, and market insights to guide strategy",
+            "Anticipates financial risks and mitigates proactively",
+            "Influences business decisions with financial reasoning"
+          ],
+          "level": "D"
+        },
+        {
+          "subLevelMin": 9,
+          "subLevelMax": 10,
+          "levelName": "Role Model",
+          "behaviourIndicators": [
+            "Shapes strategic decisions with deep financial insight",
+            "Drives sustainable growth and profitability at scale",
+            "Identifies high-impact opportunities through commercial lens",
+            "Anticipates macro-level financial implications",
+            "Coaches others on financial and business acumen"
+          ],
+          "level": "E"
+        }
+      ]
+    },
+    {
+      "sno": "6",
+      "cluster": "The North Star Council",
+      "subCluster": "Entrepreneurial Mindset",
+      "name": "Bridge-Builder Mindset",
+      "isCore": true,
+      "definition": "“A Bridge-Builder Mindset is the ability to turn gaps into connections, friction into collaboration, and diverse voices into shared success.” In the context of Sunstone: “The ability to build trust-based relationships across internal teams, partners, campuses, and external stakeholders to unlock opportunities and accelerate execution.”",
+      "keyBehaviours": [
+        "Navigates diverse interests to create alignment.",
+        "Collaborates across functions (Admissions, L&O, Placements, Finance, Campus Ops).",
+        "Influences without authority and builds coalitions for new initiatives."
+      ],
+      "levels": [
+        {
+          "subLevelMin": 1,
+          "subLevelMax": 2,
+          "levelName": "Foundational",
+          "behaviourIndicators": [
+            "Works in silos",
+            "Struggles to understand different stakeholder perspectives",
+            "Limited effort to build relationships",
+            "Avoids cross-functional interactions",
+            "Finds alignment challenging"
+          ],
+          "level": "A"
+        },
+        {
+          "subLevelMin": 3,
+          "subLevelMax": 4,
+          "levelName": "Developing",
+          "behaviourIndicators": [
+            "• Collaborates when required but not proactively \n         • Builds basic working relationships within team \n         • Begins to understand diverse stakeholder needs \n         • Participates in team discussions with support \n         • Attempts to align on simple tasks"
+          ],
+          "level": "B"
+        },
+        {
+          "subLevelMin": 5,
+          "subLevelMax": 6,
+          "levelName": "On The rise",
+          "behaviourIndicators": [
+            "Builds effective working relationships across teams",
+            "Collaborates across functions (Admissions, L&O, Placements, etc.)",
+            "Understands and balances different stakeholder needs",
+            "Influences peers within own scope",
+            "Contributes to alignment on shared goals"
+          ],
+          "level": "C"
+        },
+        {
+          "subLevelMin": 7,
+          "subLevelMax": 8,
+          "levelName": "Proficient",
+          "behaviourIndicators": [
+            "Proactively builds trust-based relationships across teams and partners",
+            "Aligns diverse stakeholders toward common objectives",
+            "Influences without authority to drive initiatives",
+            "Resolves conflicts and removes collaboration barriers",
+            "Builds coalitions for cross-functional success"
+          ],
+          "level": "D"
+        },
+        {
+          "subLevelMin": 9,
+          "subLevelMax": 10,
+          "levelName": "Role Model",
+          "behaviourIndicators": [
+            "Creates strong internal and external ecosystems",
+            "Drives organisation-wide collaboration and partnerships",
+            "Aligns highly diverse and conflicting interests at scale",
+            "Acts as a connector to unlock strategic opportunities",
+            "Sets benchmark for collaboration and trust-building culture"
+          ],
+          "level": "E"
+        }
+      ]
+    },
+    {
+      "sno": "7",
+      "cluster": "The North Star Council",
+      "subCluster": "Entrepreneurial Mindset",
+      "name": "Ambiguity Navigation",
+      "isCore": false,
+      "definition": "The capacity to stay effective, decisive, and solution-oriented in fast-changing, unclear, or evolving environments.",
+      "keyBehaviours": [
+        "Makes progress even when information is incomplete.",
+        "Experiments, iterates, and adapts quickly.",
+        "Maintains emotional stability during uncertainty.",
+        "Takes calculated risks and learns from outcomes.",
+        "Creates clarity for others in ambiguous situations"
+      ],
+      "levels": [
+        {
+          "subLevelMin": 1,
+          "subLevelMax": 2,
+          "levelName": "Foundational",
+          "behaviourIndicators": [
+            "Struggles in unclear or changing situations",
+            "Waits for direction, misses deadlines, does not ask for support",
+            "Feels uncomfortable with uncertainty",
+            "Avoids decision-making when information is incomplete",
+            "Reacts rather than responds to change"
+          ],
+          "level": "A"
+        },
+        {
+          "subLevelMin": 3,
+          "subLevelMax": 4,
+          "levelName": "Developing",
+          "behaviourIndicators": [
+            "Manages ambiguity with guidance",
+            "Takes small actions when direction is partially clear",
+            "Begins adapting to changing situations",
+            "Shows some willingness to experiment",
+            "Maintains basic composure under uncertainty"
+          ],
+          "level": "B"
+        },
+        {
+          "subLevelMin": 5,
+          "subLevelMax": 6,
+          "levelName": "On The rise",
+          "behaviourIndicators": [
+            "Makes decisions even with incomplete information",
+            "Adapts plans based on evolving situations",
+            "Experiments and learns from outcomes",
+            "Maintains stability in moderately uncertain environments",
+            "Keeps work moving despite ambiguity"
+          ],
+          "level": "C"
+        },
+        {
+          "subLevelMin": 7,
+          "subLevelMax": 8,
+          "levelName": "Proficient",
+          "behaviourIndicators": [
+            "Thrives in fast-changing, uncertain environments",
+            "Takes calculated risks and iterates quickly",
+            "Maintains strong emotional stability under pressure",
+            "Creates clarity and direction for team",
+            "Anticipates ambiguity and prepares responses"
+          ],
+          "level": "D"
+        },
+        {
+          "subLevelMin": 9,
+          "subLevelMax": 10,
+          "levelName": "Role Model",
+          "behaviourIndicators": [
+            "Leads confidently through high ambiguity and complexity",
+            "Defines direction in uncertain, evolving environments",
+            "Builds systems/processes to manage ambiguity at scale",
+            "Coaches others to operate effectively in uncertainty",
+            "Turns ambiguity into strategic opportunity"
+          ],
+          "level": "E"
+        }
+      ]
+    },
+    {
+      "sno": "8",
+      "cluster": "The Impact Engine",
+      "subCluster": "Purpose-Driven Actions",
+      "name": "Student/Education-First Integrity",
+      "isCore": true,
+      "definition": "The commitment to make decisions and take actions that prioritise student outcomes, fairness, and long-term trust — even when it requires extra effort, difficult choices, or short-term trade-offs.",
+      "keyBehaviours": [
+        "Consistently chooses what benefits students over what is convenient or politically easy.",
+        "Ensures accuracy, transparency, and honesty in communication with students and parents.",
+        "Escalates issues that may negatively impact student experience, learning, or placements.",
+        "Holds self and others accountable for promises made to students.",
+        "Challenges practices that compromise student outcomes or ethical standards.",
+        "Demonstrates empathy and fairness in resolving student concerns.",
+        "Makes decisions that protect long-term student trust, not just short-term metrics."
+      ],
+      "levels": [
+        {
+          "subLevelMin": 1,
+          "subLevelMax": 2,
+          "levelName": "Foundational",
+          "behaviourIndicators": [
+            "Focuses on tasks without considering student impact",
+            "May prioritise convenience over student outcomes",
+            "Limited transparency in communication",
+            "Avoids escalation of student-related issues",
+            "Inconsistent accountability toward commitments"
+          ],
+          "level": "A"
+        },
+        {
+          "subLevelMin": 3,
+          "subLevelMax": 4,
+          "levelName": "Developing",
+          "behaviourIndicators": [
+            "Considers student impact when prompted",
+            "Communicates basic information honestly but inconsistently",
+            "Escalates issues with support",
+            "Shows intent to act fairly in student situations, may not act",
+            "Begins taking responsibility for commitments"
+          ],
+          "level": "B"
+        },
+        {
+          "subLevelMin": 5,
+          "subLevelMax": 6,
+          "levelName": "On The rise",
+          "behaviourIndicators": [
+            "Consistently prioritises student outcomes in decisions",
+            "Communicates transparently with students and stakeholders",
+            "Escalates risks impacting student experience proactively",
+            "Holds self-accountable for commitments made",
+            "Demonstrates fairness and empathy in resolving concerns"
+          ],
+          "level": "C"
+        },
+        {
+          "subLevelMin": 7,
+          "subLevelMax": 8,
+          "levelName": "Proficient",
+          "behaviourIndicators": [
+            "Balances student needs with business constraints effectively",
+            "Challenges practices that may compromise student outcomes",
+            "Ensures high standards of transparency and ethical conduct",
+            "Holds others accountable for student commitments",
+            "Builds trust with students and stakeholders through actions"
+          ],
+          "level": "D"
+        },
+        {
+          "subLevelMin": 9,
+          "subLevelMax": 10,
+          "levelName": "Role Model",
+          "behaviourIndicators": [
+            "Champions student-first culture across teams and organisation",
+            "Makes difficult decisions to protect long-term student trust",
+            "Sets benchmarks for ethics, fairness, and transparency",
+            "Influences policies and practices to improve student outcomes",
+            "Acts as a role model for integrity in high-stakes situations"
+          ],
+          "level": "E"
+        }
+      ]
+    },
+    {
+      "sno": "9",
+      "cluster": "The Impact Engine",
+      "subCluster": "Purpose-Driven Actions",
+      "name": "Problem Solving",
+      "isCore": false,
+      "definition": "The ability to analyse situations, identify root causes, generate solutions, and implement actions that resolve issues effectively and sustainably.",
+      "keyBehaviours": [
+        "Breaks down complex problems into clear, manageable components.",
+        "Uses data, patterns, and evidence to diagnose root causes rather than treating symptoms.",
+        "Generates multiple solution options and evaluates trade-offs.",
+        "Makes timely decisions even with incomplete information.",
+        "Tests, iterates, and refines solutions based on feedback and outcomes.",
+        "Anticipates risks and proactively mitigates them.",
+        "Collaborates with cross-functional teams to solve systemic issues (e.g., admissions → L&O → placements).",
+        "Documents learnings to prevent recurrence of the same problem."
+      ],
+      "levels": [
+        {
+          "subLevelMin": 1,
+          "subLevelMax": 2,
+          "levelName": "Foundational",
+          "behaviourIndicators": [
+            "Focuses on symptoms rather than underlying issues",
+            "Reacts to problems rather than anticipating them",
+            "Requires guidance to approach problem-solving",
+            "Does not use data in decision-making"
+          ],
+          "level": "A"
+        },
+        {
+          "subLevelMin": 3,
+          "subLevelMax": 4,
+          "levelName": "Developing",
+          "behaviourIndicators": [
+            "Breaks down simple problems with guidance",
+            "Uses basic data or inputs to analyse issues",
+            "Solves routine problems with support",
+            "Begins recognising patterns in issues but unable to reach the solution"
+          ],
+          "level": "B"
+        },
+        {
+          "subLevelMin": 5,
+          "subLevelMax": 6,
+          "levelName": "On The rise",
+          "behaviourIndicators": [
+            "Analyses problems and identifies root causes independently",
+            "Uses data and evidence to make decisions",
+            "Generates multiple solutions and evaluates trade-offs",
+            "Implements solutions and refines based on feedback",
+            "Collaborates with teams to resolve issues effective"
+          ],
+          "level": "C"
+        },
+        {
+          "subLevelMin": 7,
+          "subLevelMax": 8,
+          "levelName": "Proficient",
+          "behaviourIndicators": [
+            "Solves complex, cross-functional problems",
+            "Anticipates risks and mitigates proactively",
+            "Uses structured frameworks and data for decision-making",
+            "Drives systemic solutions across functions",
+            "Ensures learnings are captured to prevent recurrence"
+          ],
+          "level": "D"
+        },
+        {
+          "subLevelMin": 9,
+          "subLevelMax": 10,
+          "levelName": "Role Model",
+          "behaviourIndicators": [
+            "Solves ambiguous, high-impact organisational problems",
+            "Builds systems and frameworks for scalable problem-solving",
+            "Anticipates future challenges and prevents them",
+            "Drives cross-functional alignment on complex issues",
+            "Coaches others in structured problem-solving approaches"
+          ],
+          "level": "E"
+        }
+      ]
+    },
+    {
+      "sno": "10",
+      "cluster": "The Impact Engine",
+      "subCluster": "Purpose-Driven Actions",
+      "name": "Result Orientation (Bias for Action)",
+      "isCore": false,
+      "definition": "A strong drive to achieve outcomes with speed, ownership, and discipline. Ability to ensure that commitments are met, obstacles are navigated quickly, and progress is consistently visible.",
+      "keyBehaviours": [
+        "Moves from planning to action quickly; avoids over-analysis or delays.",
+        "Sets clear goals, tracks progress and follows through until results are achieved.",
+        "Demonstrates urgency in solving issues that impact revenue, NPS, or student outcomes.",
+        "Pushes for timely execution even in ambiguous or resource-constrained environments.",
+        "Removes roadblocks proactively and mobilises stakeholders to maintain momentum.",
+        "Maintains high standards of quality while delivering at speed.",
+        "Celebrates wins but also reflects on misses to improve future execution."
+      ],
+      "levels": [
+        {
+          "subLevelMin": 1,
+          "subLevelMax": 2,
+          "levelName": "Foundational",
+          "behaviourIndicators": [
+            "Delays action; overthinks or waits for direction",
+            "Struggles to meet deadlines consistently",
+            "Low urgency in addressing issues",
+            "Focuses more on efforts or team working than results"
+          ],
+          "level": "A"
+        },
+        {
+          "subLevelMin": 3,
+          "subLevelMax": 4,
+          "levelName": "Developing",
+          "behaviourIndicators": [
+            "Completes tasks with supervision",
+            "Takes action when asked to take",
+            "Begins tracking progress toward goals",
+            "Shows interest in task and helps teammates in achieving goals"
+          ],
+          "level": "B"
+        },
+        {
+          "subLevelMin": 5,
+          "subLevelMax": 6,
+          "levelName": "On The rise",
+          "behaviourIndicators": [
+            "Values result more than efforts",
+            "Moves quickly from planning to execution",
+            "Sets clear goals and tracks progress of team effectively",
+            "Resolves issues impacting outcomes in a timely manner",
+            "Maintains quality while delivering at speed"
+          ],
+          "level": "C"
+        },
+        {
+          "subLevelMin": 7,
+          "subLevelMax": 8,
+          "levelName": "Proficient",
+          "behaviourIndicators": [
+            "Drives execution in complex and ambiguous environments",
+            "Removes roadblocks proactively and mobilises stakeholders",
+            "Demonstrates strong urgency on high-impact priorities (revenue, NPS, outcomes)",
+            "Balances speed with high-quality delivery",
+            "Continuously improves execution at functional level based on outcomes"
+          ],
+          "level": "D"
+        },
+        {
+          "subLevelMin": 9,
+          "subLevelMax": 10,
+          "levelName": "Role Model",
+          "behaviourIndicators": [
+            "Delivers consistent, high-impact results at scale",
+            "Creates a culture of time- sensitivity, and accountability",
+            "Drives organisation-wide execution excellence",
+            "Anticipates challenges and ensures momentum is sustained",
+            "Reflects on outcomes and builds systems for continuous improvement"
+          ],
+          "level": "E"
+        }
+      ]
+    },
+    {
+      "sno": "11",
+      "cluster": "The Impact Engine",
+      "subCluster": "Execution Excellence",
+      "name": "Ownership",
+      "isCore": false,
+      "definition": "Ownership means not waiting to be told every step, but actively moving work forward, solving problems within your control, and showing reliability in delivering what you commit to.",
+      "keyBehaviours": [
+        "Steps up without waiting to be asked; takes initiative in unclear situations.",
+        "Treats organisational goals as personal commitments.",
+        "Follows through on tasks end-to-end, even when challenges arise.",
+        "Communicates proactively about risks, delays, or dependencies.",
+        "Takes accountability for mistakes and immediately works on corrective action.",
+        "Seeks solutions instead of shifting blame or waiting for escalation.",
+        "Demonstrates reliability — does what they say they will do."
+      ],
+      "levels": [
+        {
+          "subLevelMin": 1,
+          "subLevelMax": 2,
+          "levelName": "Foundational",
+          "behaviourIndicators": [
+            "Waits for instructions before acting",
+            "Avoids responsibility for outcomes",
+            "Struggles to follow through on tasks",
+            "May shift blame when issues arise"
+          ],
+          "level": "A"
+        },
+        {
+          "subLevelMin": 3,
+          "subLevelMax": 4,
+          "levelName": "Developing",
+          "behaviourIndicators": [
+            "May take ownership of assigned his own tasks",
+            "Completes work but may need follow-ups",
+            "Communicates basic updates when prompted",
+            "Shows some accountability for mistakes",
+            "Begins taking initiative in familiar situations"
+          ],
+          "level": "B"
+        },
+        {
+          "subLevelMin": 5,
+          "subLevelMax": 6,
+          "levelName": "On The rise",
+          "behaviourIndicators": [
+            "Takes initiative and moves work forward independently",
+            "Follows through on tasks end-to-end with his team",
+            "Communicates proactively about risks and dependencies",
+            "Takes accountability for mistakes and fixes them"
+          ],
+          "level": "C"
+        },
+        {
+          "subLevelMin": 7,
+          "subLevelMax": 8,
+          "levelName": "Proficient",
+          "behaviourIndicators": [
+            "Owns outcomes beyond defined scope",
+            "Anticipates challenges and acts proactively",
+            "Takes full accountability in complex situations",
+            "Drives solutions instead of escalating prematurely",
+            "Sets high standards of ownership among teams"
+          ],
+          "level": "D"
+        },
+        {
+          "subLevelMin": 9,
+          "subLevelMax": 10,
+          "levelName": "Role Model",
+          "behaviourIndicators": [
+            "Demonstrates extreme ownership of business outcomes",
+            "Creates a culture of accountability and ownership",
+            "Takes responsibility in high-stakes, ambiguous situations",
+            "Coaches others to take ownership and accountability",
+            "Consistently delivers on commitments with high reliability"
+          ],
+          "level": "E"
+        }
+      ]
+    },
+    {
+      "sno": "12",
+      "cluster": "The Impact Engine",
+      "subCluster": "Execution Excellence",
+      "name": "Process Orientation",
+      "isCore": true,
+      "definition": "The ability to follow, optimize, and standardize data-related workflows. It is the intent to ensure efficiency, repeatability, and compliance with organizational norms.",
+      "keyBehaviours": [
+        "Following structured processes for budgeting, forecasting, lead tracking, or campaign measurement",
+        "Using defined SOPs for data collection, CRM updates, pipeline hygiene, or marketing attribution",
+        "Documenting steps clearly so that data processes are transparent and auditable",
+        "Identifying bottlenecks or inefficiencies in data workflows and suggesting improvements"
+      ],
+      "levels": [
+        {
+          "subLevelMin": 1,
+          "subLevelMax": 2,
+          "levelName": "Foundational",
+          "behaviourIndicators": [
+            "Does not consistently follow defined processes",
+            "Works in an unstructured or ad-hoc manner",
+            "Limited understanding of SOPs or workflows",
+            "Documentation is incomplete or missing",
+            "Struggles with repeatability and consistency"
+          ],
+          "level": "A"
+        },
+        {
+          "subLevelMin": 3,
+          "subLevelMax": 4,
+          "levelName": "Developing",
+          "behaviourIndicators": [
+            "Follows basic processes related to his own tasks when guided",
+            "Uses SOPs with some inconsistencies",
+            "Begins documenting steps in workflows",
+            "Identifies obvious bottleneck steps for himself"
+          ],
+          "level": "B"
+        },
+        {
+          "subLevelMin": 5,
+          "subLevelMax": 6,
+          "levelName": "On The rise",
+          "behaviourIndicators": [
+            "Adheres to defined processes consistently",
+            "Maintains clear documentation for workflows",
+            "Ensures repeatability and compliance in data processes within his team",
+            "Identifies inefficiencies and suggests improvements",
+            "Supports smooth execution of standard workflows"
+          ],
+          "level": "C"
+        },
+        {
+          "subLevelMin": 7,
+          "subLevelMax": 8,
+          "levelName": "Proficient",
+          "behaviourIndicators": [
+            "Optimises and improves existing processes",
+            "Identifies bottlenecks and drives efficiency improvements",
+            "Standardises workflows across teams/functions",
+            "Ensures processes are scalable and auditable",
+            "Drives adoption of best practices and SOPs"
+          ],
+          "level": "D"
+        },
+        {
+          "subLevelMin": 9,
+          "subLevelMax": 10,
+          "levelName": "Role Model",
+          "behaviourIndicators": [
+            "Designs scalable, efficient process frameworks",
+            "Drives organisation-wide process excellence",
+            "Builds systems ensuring compliance and efficiency at scale",
+            "Continuously innovates and improves workflows",
+            "Coaches others on process discipline and optimisation"
+          ],
+          "level": "E"
+        }
+      ]
+    },
+    {
+      "sno": "13",
+      "cluster": "The Impact Engine",
+      "subCluster": "Execution Excellence",
+      "name": "True North Mindset",
+      "isCore": false,
+      "definition": "A True North Mindset means having an internal compass—your values, purpose, and principles—that guides your decisions no matter how chaotic, distracting, or uncertain things get.",
+      "keyBehaviours": [
+        "Knowing what really matters: Your mission, values, and long-term goals stay clear even when conditions change.",
+        "Staying grounded under pressure: You don’t get easily thrown off course by setbacks, stress, or noise around you.",
+        "Making consistent decisions: Your actions align with your core beliefs, not just the mood of the moment.",
+        "Uses organisational purpose as a guide when navigating uncertainty.",
+        "Encourages others to stay aligned with core values and mission."
+      ],
+      "levels": [
+        {
+          "subLevelMin": 1,
+          "subLevelMax": 2,
+          "levelName": "Foundational",
+          "behaviourIndicators": [
+            "Decisions are inconsistent and influenced by external pressure",
+            "Lacks clarity on personal or organisational values",
+            "Easily distracted by short-term priorities",
+            "Gets perturbed under uncertainities",
+            "Limited alignment with organisational purpose"
+          ],
+          "level": "A"
+        },
+        {
+          "subLevelMin": 3,
+          "subLevelMax": 4,
+          "levelName": "Developing",
+          "behaviourIndicators": [
+            "Shows some alignment with values in familiar situations",
+            "Attempts to stay focused during challenges",
+            "Makes decisions with some consideration of purpose",
+            "Beginning to understand organisational mission"
+          ],
+          "level": "B"
+        },
+        {
+          "subLevelMin": 5,
+          "subLevelMax": 6,
+          "levelName": "On The rise",
+          "behaviourIndicators": [
+            "Makes decisions aligned with core values and purpose, helps team to understand the same",
+            "Uses organisational goals to guide actions",
+            "Demonstrates consistency in behaviour and decisions",
+            "Maintains focus despite distractions"
+          ],
+          "level": "C"
+        },
+        {
+          "subLevelMin": 7,
+          "subLevelMax": 8,
+          "levelName": "Proficient",
+          "behaviourIndicators": [
+            "Uses purpose and values to guide complex decisions",
+            "Aligns team actions with organisational mission",
+            "Encourages others to stay focused on long-term goals",
+            "Demonstrates strong integrity in decision-making"
+          ],
+          "level": "D"
+        },
+        {
+          "subLevelMin": 9,
+          "subLevelMax": 10,
+          "levelName": "Role Model",
+          "behaviourIndicators": [
+            "Embodies organisational values consistently in all situations",
+            "Acts as a guiding anchor during uncertainty and change",
+            "Influences others to align with mission and purpose",
+            "Makes principled decisions even in high-stakes scenarios",
+            "Builds a culture driven by strong values and purpose"
+          ],
+          "level": "E"
+        }
+      ]
+    },
+    {
+      "sno": "14",
+      "cluster": "The Impact Engine",
+      "subCluster": "Execution Excellence",
+      "name": "Quality Mindset",
+      "isCore": false,
+      "definition": "Quality Mindset is the commitment to consistently deliver high standards in every task. It reflects a proactive approach to preventing errors, enhancing effectiveness, and ensuring excellence in both effort and results.",
+      "keyBehaviours": [
+        "Pays attention to detail and continuously improving processes.",
+        "Demonstrates a habit of reviewing and improving work to achieve better outcomes",
+        "Takes pride in outcomes that meet or exceed expectations."
+      ],
+      "levels": [
+        {
+          "subLevelMin": 1,
+          "subLevelMax": 2,
+          "levelName": "Foundational",
+          "behaviourIndicators": [
+            "Demonstrates willingness to correct mistakes",
+            "Follows defined standards and guidelines when instructed",
+            "Completes tasks without thinking about accuracy",
+            "Identifies obvious errors when pointed out"
+          ],
+          "level": "A"
+        },
+        {
+          "subLevelMin": 3,
+          "subLevelMax": 4,
+          "levelName": "Developing",
+          "behaviourIndicators": [
+            "Regularly checks own work for errors before submission",
+            "Adheres to established processes and quality benchmarks",
+            "Takes responsibility for maintaining accuracy in routine tasks",
+            "Seeks clarification to avoid rework"
+          ],
+          "level": "B"
+        },
+        {
+          "subLevelMin": 5,
+          "subLevelMax": 6,
+          "levelName": "On The rise",
+          "behaviourIndicators": [
+            "Anticipates potential errors and takes preventive action",
+            "Suggests small improvements to enhance quality and efficiency",
+            "Maintains consistency in output even under pressure",
+            "Encourages peers to follow quality standards"
+          ],
+          "level": "C"
+        },
+        {
+          "subLevelMin": 7,
+          "subLevelMax": 8,
+          "levelName": "Proficient",
+          "behaviourIndicators": [
+            "Actively identifies gaps in processes and recommends improvements",
+            "Implements best practices across different teams to enhance quality outcomes",
+            "Monitors quality metrics and takes corrective actions",
+            "Coaches others to adopt a quality-first approach"
+          ],
+          "level": "D"
+        },
+        {
+          "subLevelMin": 9,
+          "subLevelMax": 10,
+          "levelName": "Role Model",
+          "behaviourIndicators": [
+            "Establishes a culture of excellence and zero-quality compromise mindset",
+            "Designs systems and processes that ensure sustainable quality",
+            "Aligns quality standards with institutional vision and outcomes",
+            "Drives innovation to continuously elevate standards and impact"
+          ],
+          "level": "E"
+        }
+      ]
+    },
+    {
+      "sno": "15",
+      "cluster": "The Backbone Collective",
+      "subCluster": "Diligence",
+      "name": "Attention to Detail",
+      "isCore": false,
+      "definition": "The ability to work with data meticulously, ensuring accuracy, consistency, and completeness in every step—from data entry and validation to reporting and interpretation.",
+      "keyBehaviours": [
+        "Spotting anomalies, errors, or inconsistencies in financial statements, sales reports, or campaign data",
+        "Ensuring numbers reconcile across dashboards, spreadsheets, and CRM/ERP systems",
+        "Maintaining clean, structured datasets that support reliable decision-making",
+        "Double-checking formulas, calculations, and assumptions before presenting insights"
+      ],
+      "levels": [
+        {
+          "subLevelMin": 1,
+          "subLevelMax": 2,
+          "levelName": "Foundational",
+          "behaviourIndicators": [
+            "Frequently overlooks errors or inconsistencies in data",
+            "Does not verify numbers, works on assumptions",
+            "Relies heavily on others for validation",
+            "Maintains unstructured or incomplete datasets"
+          ],
+          "level": "A"
+        },
+        {
+          "subLevelMin": 3,
+          "subLevelMax": 4,
+          "levelName": "Developing",
+          "behaviourIndicators": [
+            "Identifies basic errors in data when prompted",
+            "Performs basic checks on data and reports",
+            "Begins validating formulas and calculations for own task",
+            "Requires guidance to ensure data accuracy"
+          ],
+          "level": "B"
+        },
+        {
+          "subLevelMin": 5,
+          "subLevelMax": 6,
+          "levelName": "On The rise",
+          "behaviourIndicators": [
+            "Ensures accuracy and consistency in datasets and reports for self and team",
+            "Spots anomalies and inconsistencies independently",
+            "Validates calculations, assumptions, and outputs",
+            "Maintains clean and structured datasets",
+            "Produces reliable data for decision-making"
+          ],
+          "level": "C"
+        },
+        {
+          "subLevelMin": 7,
+          "subLevelMax": 8,
+          "levelName": "Proficient",
+          "behaviourIndicators": [
+            "High standards of data accuracy across systems",
+            "Ensures reconciliation across dashboards, CRM/ERP, and reports",
+            "Proactively identifies and resolves data quality issues",
+            "Implements checks and validation Maintains mechanisms",
+            "Minimises errors through establishing maker and checker concept across functions"
+          ],
+          "level": "D"
+        },
+        {
+          "subLevelMin": 9,
+          "subLevelMax": 10,
+          "levelName": "Role Model",
+          "behaviourIndicators": [
+            "Sets benchmarks for data accuracy and reliability at organisational level",
+            "Designs systems to ensure data quality at scale",
+            "Anticipates potential data risks and prevents errors",
+            "Drives a culture of decision making through data",
+            "Coaches others on data accuracy and validation practices"
+          ],
+          "level": "E"
+        }
+      ]
+    },
+    {
+      "sno": "16",
+      "cluster": "The Backbone Collective",
+      "subCluster": "Diligence",
+      "name": "Data Analysis",
+      "isCore": false,
+      "definition": "The ability to interpret quantitative and qualitative data to uncover patterns, generate insights, and support data-driven decision-making.",
+      "keyBehaviours": [
+        "Analysing trends in revenue, expenses, margins, customer behaviour, or campaign performance",
+        "Using data for descriptive, diagnostic and prescriptive analysis as per the role and need for translating raw data into meaningful insights, forecasts, and recommendations",
+        "Building simple models, segmentations, or visualizations to support strategic choices"
+      ],
+      "levels": [
+        {
+          "subLevelMin": 1,
+          "subLevelMax": 2,
+          "levelName": "Foundational",
+          "behaviourIndicators": [
+            "Struggles to interpret basic data",
+            "Relies on others for insights and conclusions",
+            "Uses data minimally in decision-making",
+            "Focuses on raw data rather than insights"
+          ],
+          "level": "A"
+        },
+        {
+          "subLevelMin": 3,
+          "subLevelMax": 4,
+          "levelName": "Developing",
+          "behaviourIndicators": [
+            "Identifies basic errors in data when prompted",
+            "Performs basic checks on data and reports",
+            "Begins validating formulas and calculations for own task",
+            "Requires guidance to ensure data accuracy"
+          ],
+          "level": "B"
+        },
+        {
+          "subLevelMin": 5,
+          "subLevelMax": 6,
+          "levelName": "On The rise",
+          "behaviourIndicators": [
+            "Analyses data to generate meaningful insights and guides his team",
+            "Uses descriptive and diagnostic analysis effectively",
+            "Builds simple models, segmentations, or visualisations",
+            "Supports decisions with data-backed reasoning",
+            "Identifies trends impacting business outcomes"
+          ],
+          "level": "C"
+        },
+        {
+          "subLevelMin": 7,
+          "subLevelMax": 8,
+          "levelName": "Proficient",
+          "behaviourIndicators": [
+            "Performs advanced analysis including forecasting and predictions",
+            "Uses data to drive strategic decision-making",
+            "Builds robust models and analytical frameworks",
+            "Translates complex data into actionable insights across functional levels",
+            "Influences stakeholders using data storytelling"
+          ],
+          "level": "D"
+        },
+        {
+          "subLevelMin": 9,
+          "subLevelMax": 10,
+          "levelName": "Role Model",
+          "behaviourIndicators": [
+            "Drives organisation-wide data-driven decision culture",
+            "Develops advanced analytics frameworks and systems",
+            "Anticipates trends using predictive and prescriptive analytics",
+            "Shapes business strategy through deep insights",
+            "Coaches others in data analysis and interpretation"
+          ],
+          "level": "E"
+        }
+      ]
+    },
+    {
+      "sno": "17",
+      "cluster": "The Backbone Collective",
+      "subCluster": "Growth Mindset",
+      "name": "Adaptive Agility",
+      "isCore": false,
+      "definition": "The ability to adjust thinking, designing and execution quickly in response to changing priorities, student needs, industry demands, cultural localization, or organisational direction — while maintaining effectiveness and composure.",
+      "keyBehaviours": [
+        "Responds quickly to new information, feedback, or unexpected challenges.",
+        "Adjusts plans, strategies, or communication style based on context.",
+        "Learns rapidly from failures, experiments, and iterations.",
+        "Adopts new tools, processes, or ways of working with minimal resistance."
+      ],
+      "levels": [
+        {
+          "subLevelMin": 1,
+          "subLevelMax": 2,
+          "levelName": "Foundational",
+          "behaviourIndicators": [
+            "Struggles to adapt to changes in priorities or plans",
+            "Resists new ways of working or tools",
+            "Finds it difficult to respond to unexpected challenges",
+            "Relies on tried and tested approaches even when ineffective"
+          ],
+          "level": "A"
+        },
+        {
+          "subLevelMin": 3,
+          "subLevelMax": 4,
+          "levelName": "Developing",
+          "behaviourIndicators": [
+            "Adapts to change with guidance",
+            "Responds to feedback but may take time to adjust",
+            "Tries new approaches when encouraged",
+            "Shows willingness to adjust to the culture of the organisation"
+          ],
+          "level": "B"
+        },
+        {
+          "subLevelMin": 5,
+          "subLevelMax": 6,
+          "levelName": "On The rise",
+          "behaviourIndicators": [
+            "Responds effectively to changing priorities and feedback",
+            "Helps team to adjusts plans, strategies, and communication as needed",
+            "Learns from experiments and applies improvements",
+            "Maintains team effectiveness in dynamic environments"
+          ],
+          "level": "C"
+        },
+        {
+          "subLevelMin": 7,
+          "subLevelMax": 8,
+          "levelName": "Proficient",
+          "behaviourIndicators": [
+            "Responds effectively to changing priorities at functional level",
+            "Adjusts plans, strategies, and communication across teams as needed",
+            "Brings innovative ideas and inspires the team to bring the idea into action",
+            "Adopts new tools and processes with minimal resistance"
+          ],
+          "level": "D"
+        },
+        {
+          "subLevelMin": 9,
+          "subLevelMax": 10,
+          "levelName": "Role Model",
+          "behaviourIndicators": [
+            "Thrives in highly dynamic, ambiguous environments",
+            "Leads change and drives adaptive ways of working across organisation",
+            "Builds systems that enable agility at scale",
+            "Empowers leaders to bring about changes in their area",
+            "Turns change and uncertainty into opportunities for innovation"
+          ],
+          "level": "E"
+        }
+      ]
+    },
+    {
+      "sno": "18",
+      "cluster": "The Backbone Collective",
+      "subCluster": "Growth Mindset",
+      "name": "Openness to Learnings",
+      "isCore": false,
+      "definition": "A willingness to absorb new knowledge, skills, and perspectives — especially when navigating unfamiliar situations, feedback, or changes in environment.",
+      "keyBehaviours": [
+        "Asks questions freely and seeks clarity without hesitation.",
+        "Welcomes feedback and uses it to improve performance.",
+        "Learns quickly from new tools, processes, and systems.",
+        "Experiments with new approaches rather than sticking to comfort zones.",
+        "Shows curiosity about how different teams and functions operate.",
+        "Views challenges as opportunities to grow rather than obstacles."
+      ],
+      "levels": [
+        {
+          "subLevelMin": 1,
+          "subLevelMax": 2,
+          "levelName": "Foundational",
+          "behaviourIndicators": [
+            "Seems uninterested in feedback or new ideas",
+            "Prefers familiar ways of working",
+            "Hesitant to ask questions or seek clarity",
+            "Limited curiosity about new tools or processes",
+            "Views challenges as obstacles"
+          ],
+          "level": "A"
+        },
+        {
+          "subLevelMin": 3,
+          "subLevelMax": 4,
+          "levelName": "Developing",
+          "behaviourIndicators": [
+            "Accepts feedback but applies it inconsistently",
+            "Shows willingness to learn when guided",
+            "Asks questions in familiar situations",
+            "Experiments cautiously with new approaches",
+            "Begins adapting himself to new tools or processes"
+          ],
+          "level": "B"
+        },
+        {
+          "subLevelMin": 5,
+          "subLevelMax": 6,
+          "levelName": "On The rise",
+          "behaviourIndicators": [
+            "Actively seeks feedback and applies it to improve",
+            "Learns quickly from new tools, systems, and experiences and motivates team to learn as well",
+            "Demonstrates curiosity across functions and roles",
+            "Experiments with new approaches beyond comfort zone",
+            "Adapts behaviour based on insights and learning"
+          ],
+          "level": "C"
+        },
+        {
+          "subLevelMin": 7,
+          "subLevelMax": 8,
+          "levelName": "Proficient",
+          "behaviourIndicators": [
+            "Proactively seeks diverse perspectives and feedback",
+            "Continuously upgrades skills in dynamic environments",
+            "Learns from failures and applies insights quickly",
+            "Encourages learning and experimentation across teams"
+          ],
+          "level": "D"
+        },
+        {
+          "subLevelMin": 9,
+          "subLevelMax": 10,
+          "levelName": "Role Model",
+          "behaviourIndicators": [
+            "Drives a strong learning culture across organisation",
+            "Continuously reinvents self and capabilities",
+            "Encourages curiosity and innovation organisation-wide",
+            "Mentors others in learning agility and growth mindset",
+            "Turns challenges into opportunities for transformation"
+          ],
+          "level": "E"
+        }
+      ]
+    },
+    {
+      "sno": "19",
+      "cluster": "The Backbone Collective",
+      "subCluster": "Growth Mindset",
+      "name": "Tech-Ed Foresight",
+      "isCore": false,
+      "definition": "The ability to anticipate how technology, digital learning models, and education trends will shape student outcomes, product experiences, and organisational strategy — and to integrate that foresight into decisions and innovations.",
+      "keyBehaviours": [
+        "Stays updated on emerging EdTech tools, learning models, and industry trends.",
+        "Identifies how technology can improve student learning, placements, or operational efficiency.",
+        "Proposes tech-enabled solutions (automation, analytics, digital content, LMS enhancements).",
+        "Anticipates future skill needs and integrates them into curriculum, training, or product design.",
+        "Evaluates the long-term impact of tech choices on scalability and student experience.",
+        "Collaborates with Product, L&O, Tech, and Campus teams to implement tech-driven improvements.",
+        "Uses data and digital insights to shape decisions and innovations."
+      ],
+      "levels": [
+        {
+          "subLevelMin": 1,
+          "subLevelMax": 2,
+          "levelName": "Foundational",
+          "behaviourIndicators": [
+            "Relies on existing systems without questioning improvements",
+            "Works on instructions only",
+            "Does not consider future tech impact on work",
+            "Passive towards learning new tools or innovations"
+          ],
+          "level": "A"
+        },
+        {
+          "subLevelMin": 3,
+          "subLevelMax": 4,
+          "levelName": "Developing",
+          "behaviourIndicators": [
+            "Shows some awareness of EdTech tools and trends",
+            "Uses available tools to improve efficiency when guided",
+            "Begins exploring how technology impacts student outcomes at his level",
+            "Participates in tech-driven initiatives with support"
+          ],
+          "level": "B"
+        },
+        {
+          "subLevelMin": 5,
+          "subLevelMax": 6,
+          "levelName": "On The rise",
+          "behaviourIndicators": [
+            "Stays updated on relevant EdTech trends and tools",
+            "Uses technology to improve learning, operations, or outcomes",
+            "Proposes practical tech-enabled solutions",
+            "Collaborates with team to implement tech improvements"
+          ],
+          "level": "C"
+        },
+        {
+          "subLevelMin": 7,
+          "subLevelMax": 8,
+          "levelName": "Proficient",
+          "behaviourIndicators": [
+            "Anticipates how technology will impact student experience and business",
+            "Integrates tech into strategy, processes, and product thinking",
+            "Proposes scalable tech-enabled innovations (automation, analytics, LMS, etc.)",
+            "Evaluates long-term impact of tech decisions",
+            "Drives cross-functional adoption of tech solutions"
+          ],
+          "level": "D"
+        },
+        {
+          "subLevelMin": 9,
+          "subLevelMax": 10,
+          "levelName": "Role Model",
+          "behaviourIndicators": [
+            "Shapes organisational strategy using tech and EdTech foresight",
+            "Anticipates future skill needs and integrates into product/curriculum design",
+            "Drives large-scale digital transformation and innovation",
+            "Builds systems leveraging data, automation, and emerging technologies",
+            "Recognised as a thought leader in tech-enabled education and innovation"
+          ],
+          "level": "E"
+        }
+      ]
+    }
+  ]
+}
