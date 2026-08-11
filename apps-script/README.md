@@ -39,6 +39,13 @@ Apps Script's `HtmlService`.
    - This also creates/populates tabs in your Sheet: Users, Designations,
      Competencies, CompetencyLevels, RoleCompetencyMap, GoalCycles, Goals,
      KRAs, KPIs, CompetencyRatings, ApprovalHistory.
+   - **If you get "No spreadsheet found"**: your script isn't bound to a
+     Sheet — this happens if you created the project at script.google.com
+     directly instead of via a Sheet's Extensions menu. Fix it without
+     starting over: open `Db.gs`, find `setupFromSheetUrl()` near the top,
+     replace `"PASTE_YOUR_GOOGLE_SHEET_URL_HERE"` with your actual Sheet's
+     URL (copy it from the browser address bar), select `setupFromSheetUrl`
+     in the function dropdown, click **Run** once, then run `seedAll` as normal.
 5. **Deploy as a web app.** Deploy → New deployment → gear icon → **Web app**.
    - Execute as: **Me**
    - Who has access: **Anyone** (or **Anyone within [your org]** if you're on Workspace and want it restricted)

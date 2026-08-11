@@ -6,12 +6,42 @@
 
 function ss() {
   var active = SpreadsheetApp.getActiveSpreadsheet();
-  if (!active) {
-    throw new Error(
-      "This script must be bound to a Google Sheet. Open your Sheet, then Extensions > Apps Script."
-    );
-  }
-  return active;
+  if (active) return active;
+
+  var id = PropertiesService.getScriptProperties().getProperty("SPREADSHEET_ID");
+  if (id) return SpreadsheetApp.openById(id);
+
+  throw new Error(
+    "No spreadsheet found. Either open this script from your Sheet " +
+      "(Extensions > Apps Script), or fill in your Sheet URL in " +
+      "setupFromSheetUrl() below and run that function once."
+  );
+}
+
+/**
+ * For a STANDALONE Apps Script project (created via script.google.com
+ * directly, not bound to a Sheet via Extensions > Apps Script): tells every
+ * other function which spreadsheet to use. Not needed for a bound script.
+ */
+function setup(spreadsheetUrlOrId) {
+  var id = spreadsheetUrlOrId;
+  var match = String(spreadsheetUrlOrId).match(/\/d\/([a-zA-Z0-9-_]+)/);
+  if (match) id = match[1];
+
+  var sheet = SpreadsheetApp.openById(id); // throws if inaccessible/invalid
+  PropertiesService.getScriptProperties().setProperty("SPREADSHEET_ID", id);
+  Logger.log("Spreadsheet linked: " + sheet.getUrl());
+}
+
+/**
+ * The Apps Script "Run" button can't take a typed-in argument, so this is
+ * a zero-argument function you can select and Run directly: paste your
+ * Sheet's URL between the quotes below, run this once, then run seedAll().
+ * Skip this entirely if your script is bound to a Sheet (Extensions > Apps
+ * Script from within the Sheet) — ss() will find it automatically.
+ */
+function setupFromSheetUrl() {
+  setup("PASTE_YOUR_GOOGLE_SHEET_URL_HERE");
 }
 
 function getSheet_(name) {
