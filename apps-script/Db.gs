@@ -24,11 +24,32 @@ function ss() {
  * other function which spreadsheet to use. Not needed for a bound script.
  */
 function setup(spreadsheetUrlOrId) {
-  var id = spreadsheetUrlOrId;
-  var match = String(spreadsheetUrlOrId).match(/\/d\/([a-zA-Z0-9-_]+)/);
+  var input = String(spreadsheetUrlOrId).trim();
+  var id = input;
+  var match = input.match(/\/d\/([a-zA-Z0-9-_]+)/);
   if (match) id = match[1];
 
-  var sheet = SpreadsheetApp.openById(id); // throws if inaccessible/invalid
+  if (id === "PASTE_YOUR_GOOGLE_SHEET_URL_HERE" || !id) {
+    throw new Error(
+      "setupFromSheetUrl() still has the placeholder text in it. " +
+        "Open your Sheet in the browser, copy its full URL from the address bar, " +
+        "and paste that in place of PASTE_YOUR_GOOGLE_SHEET_URL_HERE."
+    );
+  }
+
+  var sheet;
+  try {
+    sheet = SpreadsheetApp.openById(id); // throws if malformed/inaccessible
+  } catch (e) {
+    throw new Error(
+      "Could not open a spreadsheet with id \"" +
+        id +
+        "\" (" +
+        e.message +
+        "). Double check you pasted the FULL Sheet URL from the browser's address " +
+        "bar (while the Sheet itself is open) with no extra text or missing characters."
+    );
+  }
   PropertiesService.getScriptProperties().setProperty("SPREADSHEET_ID", id);
   Logger.log("Spreadsheet linked: " + sheet.getUrl());
 }
