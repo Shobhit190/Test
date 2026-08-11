@@ -4,6 +4,10 @@ A Next.js app implementing the goal-setting workflow: employees set weighted
 KRAs (90%) and self-rate role competencies (10%), submit for manager
 approval, and can be sent back for revision before final approval.
 
+**No local setup?** See [`apps-script/`](./apps-script) for a Google Apps
+Script version of the same app — deploys straight from your browser
+(Google Sheets as the database), no Node/Postgres install required.
+
 ## Stack
 
 - Next.js 16 (App Router) + TypeScript + Tailwind CSS
