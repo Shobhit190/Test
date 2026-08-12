@@ -29,6 +29,12 @@ function setup(spreadsheetUrlOrId) {
   var match = input.match(/\/d\/([a-zA-Z0-9-_]+)/);
   if (match) id = match[1];
 
+  // Strip anything that isn't a valid Drive-file-id character (letters,
+  // digits, -, _). Valid ids never contain anything else, so this quietly
+  // fixes invisible/zero-width characters that can ride along with a paste
+  // (e.g. a zero-width space) without JS's trim() catching them.
+  id = id.replace(/[^A-Za-z0-9_-]/g, "");
+
   if (id === "PASTE_YOUR_GOOGLE_SHEET_URL_HERE" || !id) {
     throw new Error(
       "setupFromSheetUrl() still has the placeholder text in it. " +
