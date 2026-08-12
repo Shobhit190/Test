@@ -108,25 +108,25 @@ function saveGoalDraft(userId, goalId, kras, ratings) {
   });
 
   kras.forEach(function (kra, index) {
-    var title = (kra.title || "").trim();
+    var title = str_(kra.title).trim();
     if (!title) return;
     var kraRow = insertRow(TABLES.KRAS.name, TABLES.KRAS.headers, {
       goalId: goalId,
       title: title,
-      description: (kra.description || "").trim(),
+      description: str_(kra.description).trim(),
       weight: Math.round(Number(kra.weight) || 0),
       order: index,
     });
     (kra.kpis || [])
       .slice(0, MAX_KPIS_PER_KRA)
       .filter(function (kpi) {
-        return (kpi.title || "").trim();
+        return str_(kpi.title).trim();
       })
       .forEach(function (kpi, kpiIndex) {
         insertRow(TABLES.KPIS.name, TABLES.KPIS.headers, {
           kraId: kraRow.id,
-          title: kpi.title.trim(),
-          target: (kpi.target || "").trim(),
+          title: str_(kpi.title).trim(),
+          target: str_(kpi.target).trim(),
           order: kpiIndex,
         });
       });
@@ -140,7 +140,7 @@ function saveGoalDraft(userId, goalId, kras, ratings) {
       goalId: goalId,
       competencyId: r.competencyId,
       subLevel: r.subLevel,
-      selfComment: (r.selfComment || "").trim(),
+      selfComment: str_(r.selfComment).trim(),
     });
   });
 
@@ -267,7 +267,7 @@ function decideGoal(userId, goalId, action, comment) {
   if (!isDirectManager && !isHrAdmin) throw new Error("You are not authorized to review this goal.");
   if (goal.status !== "SUBMITTED") throw new Error("This goal is not awaiting approval.");
 
-  if (action === "RETURN" && (!comment || !comment.trim())) {
+  if (action === "RETURN" && !str_(comment).trim()) {
     throw new Error("A comment is required when returning a goal for revision.");
   }
 
@@ -291,7 +291,7 @@ function decideGoal(userId, goalId, action, comment) {
     goalId: goalId,
     action: action,
     actorId: userId,
-    comment: (comment || "").trim(),
+    comment: str_(comment).trim(),
     createdAt: now,
   });
 

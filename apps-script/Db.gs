@@ -93,6 +93,17 @@ function newId_() {
   return Utilities.getUuid();
 }
 
+/**
+ * Coerces a value to a string for text handling, treating null/undefined
+ * as "". Needed because Google Sheets auto-parses a pure-numeric string
+ * written to a cell (e.g. a KPI target of "100") into a real Number type;
+ * once that row is read back, the value is a JS number, not a string, and
+ * a bare `(v || "").trim()` throws since numbers have no .trim().
+ */
+function str_(v) {
+  return v === undefined || v === null ? "" : String(v);
+}
+
 /** Reads every non-blank row of a table into an array of plain objects. */
 function readTable(name, headers) {
   var sheet = getSheet_(name);

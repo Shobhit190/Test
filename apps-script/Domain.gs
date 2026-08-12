@@ -26,7 +26,7 @@ function validateKras_(kras) {
   }
 
   kras.forEach(function (kra, i) {
-    if (!kra.title || !kra.title.trim()) {
+    if (!str_(kra.title).trim()) {
       errors.push("KRA #" + (i + 1) + " needs a title.");
     }
     if (kra.weight <= 0 || kra.weight > 100) {
