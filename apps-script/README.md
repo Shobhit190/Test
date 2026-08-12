@@ -26,6 +26,7 @@ Apps Script's `HtmlService`.
      - `SeedData.gs` *(large — it's the embedded competency dictionary + role mapping)*
      - `Seed.gs`
      - `Code.gs`
+     - `Admin.gs`
      - `Index.html`
      - `Stylesheet.html`
      - `Javascript.html`
@@ -60,12 +61,44 @@ Demo accounts (password `password123` for all — seeded by `seedAll`):
 | `manager@example.com` | Manager |
 | `hr.admin@example.com` | HR Admin |
 
+## Adding real employees
+
+There's no separate database to set up — the Sheet you created in step 1
+*is* the database, and it's already live once you've deployed. To add
+people beyond the 3 demo accounts:
+
+1. In the Apps Script editor, open `Admin.gs`.
+2. Find `addEmployeeFromTemplate()` near the bottom and edit the values:
+   email, name, a temporary password (tell them what it is), `systemRole`
+   (`"EMPLOYEE"`, `"MANAGER"`, or `"HR_ADMIN"`), the designation name
+   (must exactly match a row in the Sheet's **Designations** tab, or `""`),
+   and their manager's email (must already exist as a user, or `""`).
+3. Select `addEmployeeFromTemplate` in the function dropdown and click
+   **Run**. Check the *Execution log* for `Added new employee: ...`.
+4. Repeat per employee — add managers before the people who report to
+   them. Re-running with the same email updates that person (name,
+   password, role, designation, manager) instead of creating a duplicate,
+   so it's also how you reset someone's password later.
+5. If this is your first code change since deploying, create a new
+   deployment version (see below) so the live URL picks it up — though
+   `Admin.gs` only needs to be *run* from the editor, not deployed, so this
+   step is optional unless you've also changed other files.
+
 ## Re-seeding
 
-`seedAll()` is safe to re-run — it clears and rewrites the Competencies,
-CompetencyLevels, Designations, RoleCompetencyMap, GoalCycles, and Users
-tabs, and also clears all Goals/KRAs/KPIs/CompetencyRatings/ApprovalHistory
-so you get a clean slate for testing.
+`seedAll()` is safe to re-run at any time, including after you've added
+real employees or they've started entering goals. It upserts the reference
+data (Competencies, CompetencyLevels, Designations, RoleCompetencyMap, the
+`FY2025-26` cycle) by matching on name rather than wiping the tabs, so
+existing ids and any data that references them stay valid. It never
+touches an existing user (demo or real) or any Goal/KRA/KPI/
+CompetencyRatings/ApprovalHistory data — only inserts the 3 demo accounts
+if they're missing. Use it to pick up changes to the competency dictionary
+or role mapping without disturbing anyone's real data.
+
+If you deliberately want to wipe all goal data and start a cycle over,
+select `clearGoalData_` in the function dropdown and run it manually —
+`seedAll()` never calls it automatically.
 
 ## Updating the code after editing a deployment
 

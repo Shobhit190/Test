@@ -1,8 +1,12 @@
 /**
- * Run seedAll() once (Apps Script editor: select it from the function
- * dropdown, click Run) to populate every sheet from the embedded
- * reference data plus the demo cycle/users. Safe to re-run: it clears
- * and rewrites the relevant sheets each time rather than duplicating rows.
+ * Run seedAll() to populate every sheet from the embedded reference data
+ * plus the demo cycle/users. Safe to re-run at any time, including after
+ * you've added real employees: it upserts reference data (Competencies,
+ * CompetencyLevels, Designations, RoleCompetencyMap, the FY2025-26 cycle)
+ * by matching on name/natural-key rather than wiping the sheet, and it
+ * never touches an existing user or any Goal data. The demo accounts are
+ * only created if missing -- if you've since edited or removed one, this
+ * won't recreate or overwrite it.
  */
 
 var NAME_FIX_ = {
@@ -27,32 +31,51 @@ function clearSheet_(name) {
   }
 }
 
-function seedCompetencyDictionary_() {
-  clearSheet_(TABLES.COMPETENCIES.name);
-  clearSheet_(TABLES.COMPETENCY_LEVELS.name);
+function upsert_(tableName, headers, matchFn, data) {
+  var existing = findOne_(tableName, headers, matchFn);
+  if (existing) {
+    return updateRowById(tableName, headers, existing.id, data);
+  }
+  return insertRow(tableName, headers, data);
+}
 
+function seedCompetencyDictionary_() {
   var nameToId = {};
 
   COMPETENCY_DICTIONARY.competencies.forEach(function (c) {
-    var row = insertRow(TABLES.COMPETENCIES.name, TABLES.COMPETENCIES.headers, {
-      name: c.name,
-      cluster: c.cluster,
-      subCluster: c.subCluster,
-      isCore: c.isCore,
-      definition: c.definition,
-      keyBehaviours: c.keyBehaviours.join("\n"),
-    });
+    var row = upsert_(
+      TABLES.COMPETENCIES.name,
+      TABLES.COMPETENCIES.headers,
+      function (existing) {
+        return existing.name === c.name && existing.subCluster === c.subCluster;
+      },
+      {
+        name: c.name,
+        cluster: c.cluster,
+        subCluster: c.subCluster,
+        isCore: c.isCore,
+        definition: c.definition,
+        keyBehaviours: c.keyBehaviours.join("\n"),
+      }
+    );
     nameToId[c.name] = row.id;
 
     c.levels.forEach(function (level) {
-      insertRow(TABLES.COMPETENCY_LEVELS.name, TABLES.COMPETENCY_LEVELS.headers, {
-        competencyId: row.id,
-        level: level.level,
-        subLevelMin: level.subLevelMin,
-        subLevelMax: level.subLevelMax,
-        levelName: level.levelName,
-        behaviourIndicatorsJson: JSON.stringify(level.behaviourIndicators),
-      });
+      upsert_(
+        TABLES.COMPETENCY_LEVELS.name,
+        TABLES.COMPETENCY_LEVELS.headers,
+        function (existing) {
+          return existing.competencyId === row.id && existing.level === level.level;
+        },
+        {
+          competencyId: row.id,
+          level: level.level,
+          subLevelMin: level.subLevelMin,
+          subLevelMax: level.subLevelMax,
+          levelName: level.levelName,
+          behaviourIndicatorsJson: JSON.stringify(level.behaviourIndicators),
+        }
+      );
     });
   });
 
@@ -60,17 +83,19 @@ function seedCompetencyDictionary_() {
 }
 
 function seedRoleCompetencyMap_(nameToId) {
-  clearSheet_(TABLES.DESIGNATIONS.name);
-  clearSheet_(TABLES.ROLE_COMPETENCY_MAP.name);
-
   var designationNameToId = {};
 
   ROLE_COMPETENCY_MAP.roles.forEach(function (role) {
     var designationId = designationNameToId[role.designation];
     if (!designationId) {
-      var row = insertRow(TABLES.DESIGNATIONS.name, TABLES.DESIGNATIONS.headers, {
-        name: role.designation,
-      });
+      var row = upsert_(
+        TABLES.DESIGNATIONS.name,
+        TABLES.DESIGNATIONS.headers,
+        function (existing) {
+          return existing.name === role.designation;
+        },
+        { name: role.designation }
+      );
       designationId = row.id;
       designationNameToId[role.designation] = designationId;
     }
@@ -82,12 +107,14 @@ function seedRoleCompetencyMap_(nameToId) {
         Logger.log("Competency not found for role map: " + compName);
         return;
       }
-      insertRow(TABLES.ROLE_COMPETENCY_MAP.name, TABLES.ROLE_COMPETENCY_MAP.headers, {
-        designationId: designationId,
-        competencyId: competencyId,
-        isRequired: true,
-        notes: role.notes || "",
-      });
+      upsert_(
+        TABLES.ROLE_COMPETENCY_MAP.name,
+        TABLES.ROLE_COMPETENCY_MAP.headers,
+        function (existing) {
+          return existing.designationId === designationId && existing.competencyId === competencyId;
+        },
+        { designationId: designationId, competencyId: competencyId, isRequired: true, notes: role.notes || "" }
+      );
     });
   });
 
@@ -95,18 +122,26 @@ function seedRoleCompetencyMap_(nameToId) {
 }
 
 function seedDemoUsersAndCycle_(designationNameToId) {
-  clearSheet_(TABLES.GOAL_CYCLES.name);
-  insertRow(TABLES.GOAL_CYCLES.name, TABLES.GOAL_CYCLES.headers, {
-    name: "FY2025-26",
-    startDate: "2025-04-01",
-    endDate: "2026-03-31",
-    isActive: true,
-  });
+  upsert_(
+    TABLES.GOAL_CYCLES.name,
+    TABLES.GOAL_CYCLES.headers,
+    function (existing) {
+      return existing.name === "FY2025-26";
+    },
+    { name: "FY2025-26", startDate: "2025-04-01", endDate: "2026-03-31", isActive: true }
+  );
 
-  clearSheet_(TABLES.USERS.name);
   var passwordHash = hashPassword_("password123");
 
-  var hrAdmin = insertRow(TABLES.USERS.name, TABLES.USERS.headers, {
+  function ensureDemoUser(email, data) {
+    var existing = findOne_(TABLES.USERS.name, TABLES.USERS.headers, function (u) {
+      return u.email === email;
+    });
+    if (existing) return existing; // never touch a user that already exists
+    return insertRow(TABLES.USERS.name, TABLES.USERS.headers, data);
+  }
+
+  var hrAdmin = ensureDemoUser("hr.admin@example.com", {
     email: "hr.admin@example.com",
     name: "Hina Rao (HR Admin)",
     passwordHash: passwordHash,
@@ -115,7 +150,7 @@ function seedDemoUsersAndCycle_(designationNameToId) {
     managerId: "",
   });
 
-  var manager = insertRow(TABLES.USERS.name, TABLES.USERS.headers, {
+  var manager = ensureDemoUser("manager@example.com", {
     email: "manager@example.com",
     name: "Mohan Iyer (Manager)",
     passwordHash: passwordHash,
@@ -124,7 +159,7 @@ function seedDemoUsersAndCycle_(designationNameToId) {
     managerId: "",
   });
 
-  insertRow(TABLES.USERS.name, TABLES.USERS.headers, {
+  ensureDemoUser("employee@example.com", {
     email: "employee@example.com",
     name: "Priya Nair (Employee)",
     passwordHash: passwordHash,
@@ -133,23 +168,28 @@ function seedDemoUsersAndCycle_(designationNameToId) {
     managerId: manager.id,
   });
 
-  Logger.log("Seeded demo cycle + users. hrAdmin=%s manager=%s", hrAdmin.email, manager.email);
+  Logger.log("Demo cycle/users ready. hrAdmin=%s manager=%s", hrAdmin.email, manager.email);
 }
 
-/** Also clears goal data so re-running seedAll() during testing starts clean. */
+/**
+ * Deletes ALL goal-related data (Goals, KRAs, KPIs, CompetencyRatings,
+ * ApprovalHistory) for every employee. NOT called automatically by
+ * seedAll() -- run this yourself only if you deliberately want to wipe
+ * everyone's in-progress goals and start a cycle over.
+ */
 function clearGoalData_() {
   [TABLES.GOALS, TABLES.KRAS, TABLES.KPIS, TABLES.COMPETENCY_RATINGS, TABLES.APPROVAL_HISTORY].forEach(
     function (t) {
       clearSheet_(t.name);
     }
   );
+  Logger.log("Cleared all goal data.");
 }
 
 function seedAll() {
   var nameToId = seedCompetencyDictionary_();
   var designationNameToId = seedRoleCompetencyMap_(nameToId);
   seedDemoUsersAndCycle_(designationNameToId);
-  clearGoalData_();
   Logger.log(
     "Seed complete: %s competencies, %s designations.",
     Object.keys(nameToId).length,
