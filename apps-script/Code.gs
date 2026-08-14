@@ -25,9 +25,7 @@ function getDashboard(userId) {
 
   var teamGoals = [];
   if (user.systemRole === "MANAGER" || user.systemRole === "HR_ADMIN") {
-    var users = readTable(TABLES.USERS.name, TABLES.USERS.headers);
-    var designations = readTable(TABLES.DESIGNATIONS.name, TABLES.DESIGNATIONS.headers);
-    var designationsById = indexBy_(designations, "id");
+    var users = readEmployeesResolved_();
     var relevantUsers =
       user.systemRole === "HR_ADMIN"
         ? users
@@ -45,12 +43,11 @@ function getDashboard(userId) {
     teamGoals = goals
       .map(function (g) {
         var emp = usersById[g.employeeId];
-        var desig = emp && emp.designationId ? designationsById[emp.designationId] : null;
         return {
           id: g.id,
           status: g.status,
           employeeName: emp ? emp.name : "Unknown",
-          designationName: desig ? desig.name : null,
+          designationName: emp ? emp.designationName : null,
         };
       })
       .sort(function (a, b) {
@@ -64,6 +61,15 @@ function getDashboard(userId) {
     teamGoals: teamGoals,
     isManagerOrHr: user.systemRole === "MANAGER" || user.systemRole === "HR_ADMIN",
     isHrAdmin: user.systemRole === "HR_ADMIN",
+    profile: {
+      employeeCode: user.id,
+      name: user.name,
+      brand: user.brand,
+      designationName: user.designationName,
+      managerName: user.managerName,
+      pmsCycle: user.pmsCycle,
+      role: user.systemRole,
+    },
   };
 }
 
@@ -197,10 +203,8 @@ function getApprovalQueue(userId) {
   var cycle = getActiveCycle_();
   var isHrAdmin = user.systemRole === "HR_ADMIN";
 
-  var users = readTable(TABLES.USERS.name, TABLES.USERS.headers);
+  var users = readEmployeesResolved_();
   var usersById = indexBy_(users, "id");
-  var designations = readTable(TABLES.DESIGNATIONS.name, TABLES.DESIGNATIONS.headers);
-  var designationsById = indexBy_(designations, "id");
 
   var goals = readTable(TABLES.GOALS.name, TABLES.GOALS.headers).filter(function (g) {
     if (g.cycleId !== cycle.id) return false;
@@ -211,12 +215,11 @@ function getApprovalQueue(userId) {
 
   function toSummary(g) {
     var emp = usersById[g.employeeId];
-    var desig = emp && emp.designationId ? designationsById[emp.designationId] : null;
     return {
       id: g.id,
       status: g.status,
       employeeName: emp ? emp.name : "Unknown",
-      designationName: desig ? desig.name : null,
+      designationName: emp ? emp.designationName : null,
       submittedAt: g.submittedAt,
     };
   }

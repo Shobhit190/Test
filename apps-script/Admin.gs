@@ -3,35 +3,45 @@
  * can't take arguments, so addEmployeeFromTemplate() below is a
  * fill-in-the-blanks wrapper: edit the values, select it in the function
  * dropdown, and click Run once per employee.
+ *
+ * This does the same thing as typing a row directly into the Employee
+ * Details sheet -- use whichever's more convenient. Its main advantage is
+ * validating Designation/Manager against what's actually in the sheet
+ * before saving, since a typo there silently breaks that person's
+ * competency options or approval routing.
  */
 
 /**
- * Adds a new employee, or updates one if the email already exists (so
- * re-running with the same email is safe -- it won't create a duplicate).
+ * Adds a new employee, or updates one if the employeeCode already exists
+ * (so re-running with the same employeeCode is safe -- it won't create a
+ * duplicate row).
  *
+ * - employeeCode: becomes this employee's row id. Must be unique.
  * - systemRole: "EMPLOYEE", "MANAGER", or "HR_ADMIN"
- * - designationName: must exactly match a name in the Designations tab
- *   (open your Sheet's Designations tab to see the full list of 40), or
+ * - designationName: must exactly match a name in the Designations tab, or
  *   "" for none
- * - managerEmail: an existing user's email (add managers before the
- *   employees who report to them), or "" for none
+ * - managerName: must exactly match an existing employee's Name in the
+ *   Employee Details sheet (add managers before the people who report to
+ *   them), or "" for none
  */
-function addEmployee_(email, name, password, systemRole, designationName, managerEmail) {
+function addEmployee_(employeeCode, email, name, password, systemRole, brand, designationName, pmsCycle, managerName) {
+  employeeCode = str_(employeeCode).trim();
   email = str_(email).trim().toLowerCase();
   name = str_(name).trim();
   password = str_(password);
   systemRole = str_(systemRole).trim().toUpperCase();
+  brand = str_(brand).trim();
   designationName = str_(designationName).trim();
-  managerEmail = str_(managerEmail).trim().toLowerCase();
+  pmsCycle = str_(pmsCycle).trim();
+  managerName = str_(managerName).trim();
 
-  if (!email || !name || !password) {
-    throw new Error("email, name, and password are all required.");
+  if (!employeeCode || !email || !name || !password) {
+    throw new Error("employeeCode, email, name, and password are all required.");
   }
   if (["EMPLOYEE", "MANAGER", "HR_ADMIN"].indexOf(systemRole) === -1) {
     throw new Error('systemRole must be "EMPLOYEE", "MANAGER", or "HR_ADMIN" (got: "' + systemRole + '").');
   }
 
-  var designationId = "";
   if (designationName) {
     var designation = findOne_(TABLES.DESIGNATIONS.name, TABLES.DESIGNATIONS.headers, function (d) {
       return str_(d.name).trim().toLowerCase() === designationName.toLowerCase();
@@ -43,60 +53,68 @@ function addEmployee_(email, name, password, systemRole, designationName, manage
           '" found. Check the Designations tab for the exact spelling, or leave it blank.'
       );
     }
-    designationId = designation.id;
   }
 
-  var managerId = "";
-  if (managerEmail) {
+  if (managerName) {
     var manager = findOne_(TABLES.USERS.name, TABLES.USERS.headers, function (u) {
-      return str_(u.email).trim().toLowerCase() === managerEmail;
+      return str_(u.name).trim().toLowerCase() === managerName.toLowerCase();
     });
     if (!manager) {
-      throw new Error('No existing user with email "' + managerEmail + '" found to use as manager.');
+      throw new Error(
+        'No existing employee named "' +
+          managerName +
+          '" found to use as manager. Add managers before the people who report to them.'
+      );
     }
-    managerId = manager.id;
   }
 
-  var passwordHash = hashPassword_(password);
-  var existing = findOne_(TABLES.USERS.name, TABLES.USERS.headers, function (u) {
+  var existingByCode = findOne_(TABLES.USERS.name, TABLES.USERS.headers, function (u) {
+    return u.id === employeeCode;
+  });
+  var existingByEmail = findOne_(TABLES.USERS.name, TABLES.USERS.headers, function (u) {
     return str_(u.email).trim().toLowerCase() === email;
   });
+  if (existingByEmail && (!existingByCode || existingByEmail.id !== existingByCode.id)) {
+    throw new Error('Email "' + email + '" is already used by employee code "' + existingByEmail.id + '".');
+  }
 
-  if (existing) {
-    updateRowById(TABLES.USERS.name, TABLES.USERS.headers, existing.id, {
-      name: name,
-      passwordHash: passwordHash,
-      systemRole: systemRole,
-      designationId: designationId,
-      managerId: managerId,
-    });
-    Logger.log("Updated existing employee: " + email);
+  var data = {
+    name: name,
+    brand: brand,
+    designation: designationName,
+    managerName: managerName,
+    role: systemRole,
+    pmsCycle: pmsCycle,
+    email: email,
+    password: password,
+  };
+
+  if (existingByCode) {
+    updateRowById(TABLES.USERS.name, TABLES.USERS.headers, employeeCode, data);
+    Logger.log("Updated existing employee: " + employeeCode);
   } else {
-    insertRow(TABLES.USERS.name, TABLES.USERS.headers, {
-      email: email,
-      name: name,
-      passwordHash: passwordHash,
-      systemRole: systemRole,
-      designationId: designationId,
-      managerId: managerId,
-    });
-    Logger.log("Added new employee: " + email);
+    data.id = employeeCode;
+    insertRow(TABLES.USERS.name, TABLES.USERS.headers, data);
+    Logger.log("Added new employee: " + employeeCode);
   }
 }
 
 /**
  * Fill in the values below and Run this once per employee. Re-running
- * with the same email updates that person (e.g. to change their
+ * with the same employeeCode updates that person (e.g. to change their
  * designation or reset their password) instead of duplicating them.
  * Add managers before the employees who report to them.
  */
 function addEmployeeFromTemplate() {
   addEmployee_(
+    "EMP1024", // employee code -- becomes their row id, must be unique
     "jane.doe@example.com", // email
     "Jane Doe", // name
-    "ChangeThisPassword123", // password -- pick something and tell them what it is
+    "EMP1024", // password -- defaults to the employee code, change if you want something else
     "EMPLOYEE", // "EMPLOYEE", "MANAGER", or "HR_ADMIN"
+    "Acme Learning", // brand
     "Business Analyst", // designation name, must match the Designations tab exactly, or ""
-    "manager@example.com" // their manager's email (must already exist), or ""
+    "FY2025-26", // PMS cycle
+    "Jane Manager" // their manager's Name, must match an existing employee exactly, or ""
   );
 }

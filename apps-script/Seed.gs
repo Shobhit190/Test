@@ -121,7 +121,7 @@ function seedRoleCompetencyMap_(nameToId) {
   return designationNameToId;
 }
 
-function seedDemoUsersAndCycle_(designationNameToId) {
+function seedDemoUsersAndCycle_() {
   upsert_(
     TABLES.GOAL_CYCLES.name,
     TABLES.GOAL_CYCLES.headers,
@@ -131,41 +131,46 @@ function seedDemoUsersAndCycle_(designationNameToId) {
     { name: "FY2025-26", startDate: "2025-04-01", endDate: "2026-03-31", isActive: true }
   );
 
-  var passwordHash = hashPassword_("password123");
-
-  function ensureDemoUser(email, data) {
+  function ensureDemoUser(employeeCode, data) {
     var existing = findOne_(TABLES.USERS.name, TABLES.USERS.headers, function (u) {
-      return u.email === email;
+      return u.id === employeeCode;
     });
     if (existing) return existing; // never touch a user that already exists
+    data.id = employeeCode;
     return insertRow(TABLES.USERS.name, TABLES.USERS.headers, data);
   }
 
-  var hrAdmin = ensureDemoUser("hr.admin@example.com", {
-    email: "hr.admin@example.com",
+  var hrAdmin = ensureDemoUser("HR001", {
     name: "Hina Rao (HR Admin)",
-    passwordHash: passwordHash,
-    systemRole: "HR_ADMIN",
-    designationId: "",
-    managerId: "",
+    brand: "",
+    designation: "",
+    managerName: "",
+    role: "HR_ADMIN",
+    pmsCycle: "FY2025-26",
+    email: "hr.admin@example.com",
+    password: "password123",
   });
 
-  var manager = ensureDemoUser("manager@example.com", {
-    email: "manager@example.com",
+  var manager = ensureDemoUser("MGR001", {
     name: "Mohan Iyer (Manager)",
-    passwordHash: passwordHash,
-    systemRole: "MANAGER",
-    designationId: designationNameToId["Academic Head"] || "",
-    managerId: "",
+    brand: "",
+    designation: "Academic Head",
+    managerName: "",
+    role: "MANAGER",
+    pmsCycle: "FY2025-26",
+    email: "manager@example.com",
+    password: "password123",
   });
 
-  ensureDemoUser("employee@example.com", {
-    email: "employee@example.com",
+  ensureDemoUser("EMP001", {
     name: "Priya Nair (Employee)",
-    passwordHash: passwordHash,
-    systemRole: "EMPLOYEE",
-    designationId: designationNameToId["Business Analyst"] || "",
-    managerId: manager.id,
+    brand: "",
+    designation: "Business Analyst",
+    managerName: manager.name,
+    role: "EMPLOYEE",
+    pmsCycle: "FY2025-26",
+    email: "employee@example.com",
+    password: "password123",
   });
 
   Logger.log("Demo cycle/users ready. hrAdmin=%s manager=%s", hrAdmin.email, manager.email);
@@ -189,7 +194,7 @@ function clearGoalData_() {
 function seedAll() {
   var nameToId = seedCompetencyDictionary_();
   var designationNameToId = seedRoleCompetencyMap_(nameToId);
-  seedDemoUsersAndCycle_(designationNameToId);
+  seedDemoUsersAndCycle_();
   Logger.log(
     "Seed complete: %s competencies, %s designations.",
     Object.keys(nameToId).length,

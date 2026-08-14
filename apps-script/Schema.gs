@@ -4,9 +4,16 @@
  */
 
 var TABLES = {
+  // "id" here is the Employee Code -- it's the row's unique key, same as
+  // every other table's "id" column, just human-assigned instead of a
+  // generated UUID. designation/managerName are stored as plain text (so
+  // this sheet is safe to hand-edit directly) and resolved dynamically
+  // against the Designations tab / other employees' Name column by
+  // readEmployeesResolved_() in Repository.gs -- see that function before
+  // changing this column order.
   USERS: {
-    name: "Users",
-    headers: ["id", "email", "name", "passwordHash", "systemRole", "designationId", "managerId"],
+    name: "Employee Details",
+    headers: ["id", "name", "brand", "designation", "managerName", "role", "pmsCycle", "email", "password"],
   },
   DESIGNATIONS: {
     name: "Designations",

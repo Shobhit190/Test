@@ -109,7 +109,7 @@
       .then(function (user) {
         state.user = user;
         state.loginError = null;
-        goDashboard();
+        goGuidelines();
       })
       .catch(function (err) {
         state.loginError = err.message || "Invalid email or password.";
@@ -127,6 +127,36 @@
   }
 
   // ---------------------------------------------------------------------
+  // Guidelines (shown once, right after login, before the dashboard)
+  // ---------------------------------------------------------------------
+  var GUIDELINES = [
+    "Set 2–6 KRAs that together cover 90% of your role, with weights summing to 100%.",
+    "Add up to 3 KPIs per KRA to make each one measurable.",
+    "Self-rate on at least 3 role competencies (10% of your goal) using the level guide shown for each one.",
+    "Save your draft any time — nothing is final until you submit it.",
+    "Once submitted, your manager can approve it or send it back with comments for you to revise and resubmit.",
+  ];
+
+  function goGuidelines() {
+    state.view = "guidelines";
+    var firstName = (state.user.name || "").split(" ")[0] || state.user.name;
+    var html =
+      '<div class="center-screen"><div class="login-box" style="max-width:480px;text-align:left">' +
+      "<h1>Welcome, " +
+      esc(firstName) +
+      "</h1>" +
+      '<p class="muted mt-1">A few quick guidelines before you get started:</p>' +
+      '<ul class="bullets mt-4">' +
+      GUIDELINES.map(function (g) {
+        return "<li>" + esc(g) + "</li>";
+      }).join("") +
+      "</ul>" +
+      '<button class="btn-primary mt-6" onclick="goDashboard()">Continue to Dashboard</button>' +
+      "</div></div>";
+    setContent(html);
+  }
+
+  // ---------------------------------------------------------------------
   // Dashboard
   // ---------------------------------------------------------------------
   function goDashboard() {
@@ -135,11 +165,31 @@
     runRpc("getDashboard", state.user.id).then(renderDashboard).catch(showFatal);
   }
 
+  function profileRow_(label, value) {
+    return (
+      '<div class="row"><span class="small muted">' +
+      esc(label) +
+      '</span><span class="small" style="font-weight:500">' +
+      esc(value || "—") +
+      "</span></div>"
+    );
+  }
+
   function renderDashboard(data) {
     var myGoal = data.myGoal;
+    var p = data.profile;
     var html = navHtml();
     html += "<h1>Dashboard</h1>";
     html += '<p class="muted mt-1">Cycle: ' + esc(data.cycleName) + "</p>";
+
+    html += '<div class="card mt-4"><h3>My Details</h3><div class="stack" style="gap:6px">';
+    html += profileRow_("Employee Code", p.employeeCode);
+    html += profileRow_("Brand", p.brand);
+    html += profileRow_("Designation", p.designationName);
+    html += profileRow_("Manager", p.managerName);
+    html += profileRow_("PMS Cycle", p.pmsCycle);
+    html += profileRow_("Role", p.role);
+    html += "</div></div>";
 
     html += '<div class="card mt-6"><div class="row">';
     html += "<div><p><strong>My Goal</strong></p>";

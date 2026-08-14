@@ -37,9 +37,9 @@ Apps Script's `HtmlService`.
      "Google hasn't verified this app" warning (Advanced → Go to project (unsafe));
      this is normal for a script you wrote/pasted yourself.
    - Check the *Execution log* for `Seed complete: 19 competencies, 40 designations.`
-   - This also creates/populates tabs in your Sheet: Users, Designations,
-     Competencies, CompetencyLevels, RoleCompetencyMap, GoalCycles, Goals,
-     KRAs, KPIs, CompetencyRatings, ApprovalHistory.
+   - This also creates/populates tabs in your Sheet: Employee Details,
+     Designations, Competencies, CompetencyLevels, RoleCompetencyMap,
+     GoalCycles, Goals, KRAs, KPIs, CompetencyRatings, ApprovalHistory.
    - **If you get "No spreadsheet found"**: your script isn't bound to a
      Sheet — this happens if you created the project at script.google.com
      directly instead of via a Sheet's Extensions menu. Fix it without
@@ -63,26 +63,57 @@ Demo accounts (password `password123` for all — seeded by `seedAll`):
 
 ## Adding real employees
 
-There's no separate database to set up — the Sheet you created in step 1
-*is* the database, and it's already live once you've deployed. To add
-people beyond the 3 demo accounts:
+There's no separate database to set up — the **Employee Details** tab
+created by `seedAll()` *is* the employee database, and it's already live
+once you've deployed. You can add people two ways:
 
-1. In the Apps Script editor, open `Admin.gs`.
-2. Find `addEmployeeFromTemplate()` near the bottom and edit the values:
-   email, name, a temporary password (tell them what it is), `systemRole`
-   (`"EMPLOYEE"`, `"MANAGER"`, or `"HR_ADMIN"`), the designation name
-   (must exactly match a row in the Sheet's **Designations** tab, or `""`),
-   and their manager's email (must already exist as a user, or `""`).
-3. Select `addEmployeeFromTemplate` in the function dropdown and click
-   **Run**. Check the *Execution log* for `Added new employee: ...`.
-4. Repeat per employee — add managers before the people who report to
-   them. Re-running with the same email updates that person (name,
-   password, role, designation, manager) instead of creating a duplicate,
-   so it's also how you reset someone's password later.
-5. If this is your first code change since deploying, create a new
-   deployment version (see below) so the live URL picks it up — though
-   `Admin.gs` only needs to be *run* from the editor, not deployed, so this
-   step is optional unless you've also changed other files.
+**Option A — edit the sheet directly.** Open the **Employee Details** tab
+and add one row per person, in this exact column order:
+
+| Column | Meaning |
+|---|---|
+| Employee Code | Unique per person — this is their row's internal id, so it must not repeat or be blank. |
+| Name | Full name. Also what **Manager** below is matched against for other employees. |
+| Brand | Free text (e.g. which brand/business unit they sit under). |
+| Designation | Must exactly match a name in the **Designations** tab, or leave blank. |
+| Manager | Must exactly match another employee's **Name** in this same sheet, or leave blank. Add managers before the people who report to them. |
+| Role | `EMPLOYEE`, `MANAGER`, or `HR_ADMIN`. |
+| PMS Cycle | Informational — everyone shares the one active cycle (`FY2025-26` by default) regardless of what's typed here. |
+| Email | Their login email. Must be unique. |
+| Password | Their login password — stored and compared as **plain text** (see note below), typically set to the same value as Employee Code. |
+
+Typos in Designation or Manager fail silently (that person just won't get
+role-specific competency options, or their goal won't route to the right
+approver) — there's no validation on a hand-typed row.
+
+**Option B — run a script.** In the Apps Script editor, open `Admin.gs`,
+edit the values in `addEmployeeFromTemplate()` near the bottom (same
+fields as above, in function-argument form), select it in the function
+dropdown, and click **Run**. This validates Designation and Manager
+against what's actually in the sheet before saving, so a typo throws an
+error immediately instead of silently breaking that person's competency
+options or approvals later. Check the *Execution log* for
+`Added new employee: ...`.
+
+Either way, re-running with the same Employee Code updates that person
+(name, password, role, designation, manager, etc.) instead of creating a
+duplicate row — that's also how you reset someone's password later.
+
+**On passwords**: they're stored as plain text, not hashed. Given the
+password is typically just the Employee Code — already visible in the
+next cell over — hashing it would only add friction, not real security.
+This tool was already documented as not production-grade auth (see
+Notes/limitations below); treat the Sheet itself as the sensitive asset
+and control who has access to it.
+
+## What employees see after logging in
+
+Right after signing in, employees see a one-time **guidelines** screen
+(edit the `GUIDELINES` array near the top of `Javascript.html` to change
+the text) before landing on the dashboard. The dashboard also shows a
+**My Details** card with their Employee Code, Brand, Designation, Manager,
+PMS Cycle, and Role — everything from their Employee Details row except
+Email and Password.
 
 ## Re-seeding
 
@@ -91,7 +122,7 @@ real employees or they've started entering goals. It upserts the reference
 data (Competencies, CompetencyLevels, Designations, RoleCompetencyMap, the
 `FY2025-26` cycle) by matching on name rather than wiping the tabs, so
 existing ids and any data that references them stay valid. It never
-touches an existing user (demo or real) or any Goal/KRA/KPI/
+touches an existing employee (demo or real) or any Goal/KRA/KPI/
 CompetencyRatings/ApprovalHistory data — only inserts the 3 demo accounts
 if they're missing. Use it to pick up changes to the competency dictionary
 or role mapping without disturbing anyone's real data.
@@ -127,10 +158,11 @@ open('SeedData.gs', 'w').write(out)
 
 ## Notes / limitations vs. the Next.js version
 
-- **Auth is minimal by design**: SHA-256 password hash (no salt), and the
-  "session" is just the logged-in user's row id held in the browser tab's
-  memory for the page's lifetime — not a real auth token. Fine for a demo/
-  test tool; not something to expose with real employee data as-is.
+- **Auth is minimal by design**: passwords are stored as plain text (see
+  "On passwords" above), and the "session" is just the logged-in user's
+  row id held in the browser tab's memory for the page's lifetime — not a
+  real auth token. Fine for a demo/test tool; not something to expose
+  with real employee data as-is.
 - **No cycle-switching UI**: like the Next.js version, one active
   `GoalCycle` at a time (seeded as `FY2025-26`).
 - **No HR admin screen for editing the dictionary/role mapping** — same as

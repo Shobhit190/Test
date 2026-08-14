@@ -2,6 +2,54 @@
  * Higher-level domain queries built on top of the generic table helpers.
  */
 
+/**
+ * Employee Details rows store Designation and Manager as free text (typed
+ * directly into the sheet, or via Admin.gs) rather than internal ids.
+ * This resolves both dynamically against the Designations tab and other
+ * employees' Name column, and normalizes "role" into the systemRole shape
+ * the rest of the app expects. Always read employees through this (or
+ * findEmployeeResolved_) rather than raw readTable/findOne_ on TABLES.USERS,
+ * so a designation/manager rename in the sheet takes effect immediately.
+ */
+function readEmployeesResolved_() {
+  var raw = readTable(TABLES.USERS.name, TABLES.USERS.headers);
+  var designations = readTable(TABLES.DESIGNATIONS.name, TABLES.DESIGNATIONS.headers);
+  var designationIdByName = {};
+  designations.forEach(function (d) {
+    designationIdByName[str_(d.name).trim().toLowerCase()] = d.id;
+  });
+  var idByName = {};
+  raw.forEach(function (u) {
+    idByName[str_(u.name).trim().toLowerCase()] = u.id;
+  });
+  return raw.map(function (u) {
+    var designationName = str_(u.designation).trim();
+    var managerName = str_(u.managerName).trim();
+    return {
+      id: u.id,
+      employeeCode: u.id,
+      name: str_(u.name).trim(),
+      brand: str_(u.brand).trim(),
+      designationName: designationName,
+      designationId: designationName ? designationIdByName[designationName.toLowerCase()] || null : null,
+      managerName: managerName,
+      managerId: managerName ? idByName[managerName.toLowerCase()] || null : null,
+      systemRole: str_(u.role).trim().toUpperCase(),
+      pmsCycle: str_(u.pmsCycle).trim(),
+      email: str_(u.email).trim().toLowerCase(),
+      password: str_(u.password),
+    };
+  });
+}
+
+function findEmployeeResolved_(predicate) {
+  var all = readEmployeesResolved_();
+  for (var i = 0; i < all.length; i++) {
+    if (predicate(all[i])) return all[i];
+  }
+  return null;
+}
+
 function getActiveCycle_() {
   var cycles = readTable(TABLES.GOAL_CYCLES.name, TABLES.GOAL_CYCLES.headers);
   var active = cycles.filter(function (c) {
@@ -107,15 +155,8 @@ function getRequiredCompetenciesForUser_(userId) {
     return a.competency.name.localeCompare(b.competency.name);
   });
 
-  var designation = null;
-  if (user.designationId) {
-    designation = findOne_(TABLES.DESIGNATIONS.name, TABLES.DESIGNATIONS.headers, function (d) {
-      return d.id === user.designationId;
-    });
-  }
-
   return {
-    designationName: designation ? designation.name : null,
+    designationName: user.designationName || null,
     options: options,
   };
 }
@@ -174,7 +215,7 @@ function getFullGoal_(goalId) {
       };
     });
 
-  var users = readTable(TABLES.USERS.name, TABLES.USERS.headers);
+  var users = readEmployeesResolved_();
   var usersById = indexBy_(users, "id");
   var history = readTable(TABLES.APPROVAL_HISTORY.name, TABLES.APPROVAL_HISTORY.headers)
     .filter(function (h) {
@@ -195,17 +236,13 @@ function getFullGoal_(goalId) {
     });
 
   var employee = usersById[goal.employeeId];
-  var designations = readTable(TABLES.DESIGNATIONS.name, TABLES.DESIGNATIONS.headers);
-  var designationsById = indexBy_(designations, "id");
-  var employeeDesignation =
-    employee && employee.designationId ? designationsById[employee.designationId] : null;
 
   return {
     id: goal.id,
     employeeId: goal.employeeId,
     employeeName: employee ? employee.name : "Unknown",
     employeeManagerId: employee ? employee.managerId : null,
-    employeeDesignationName: employeeDesignation ? employeeDesignation.name : null,
+    employeeDesignationName: employee ? employee.designationName : null,
     cycleId: goal.cycleId,
     status: goal.status,
     submittedAt: goal.submittedAt,
