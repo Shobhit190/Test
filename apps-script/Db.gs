@@ -65,7 +65,7 @@ function setup(spreadsheetUrlOrId) {
  * a zero-argument function you can select and Run directly: paste your
  * Sheet's URL between the quotes below, run this once, then run seedAll().
  * Skip this entirely if your script is bound to a Sheet (Extensions > Apps
- * Script from within the Sheet) — ss() will find it automatically.
+ * Script from within the Sheet) -- ss() will find it automatically.
  */
 function setupFromSheetUrl() {
   setup("PASTE_YOUR_GOOGLE_SHEET_URL_HERE");
@@ -104,24 +104,55 @@ function str_(v) {
   return v === undefined || v === null ? "" : String(v);
 }
 
+/**
+ * Every RPC ends up reading the same tables several times over (e.g. a
+ * single getDashboard/getGoalScreen call resolves the Employee Details +
+ * Designations + PromotionLevels tables more than once). Each readTable
+ * call is otherwise a real round trip to the Sheets backend, which is what
+ * makes the app feel slow to load -- so within one script execution, cache
+ * each table's rows the first time they're read and invalidate on write.
+ * This never persists across executions (Apps Script gives each RPC call
+ * a fresh global scope), so the sheet is still always read fresh per request.
+ */
+var _tableCache_ = {};
+
+function invalidateTable_(name) {
+  delete _tableCache_[name];
+}
+
+/**
+ * Called at the top of every RPC entry point, before any table is read.
+ * Apps Script doesn't guarantee a fresh global scope per google.script.run
+ * call, so this makes that guarantee explicit rather than relying on it --
+ * each RPC always starts with an empty cache and reads the sheet fresh at
+ * least once, so a hand-edit made directly in the sheet is never missed.
+ */
+function resetTableCache_() {
+  _tableCache_ = {};
+}
+
 /** Reads every non-blank row of a table into an array of plain objects. */
 function readTable(name, headers) {
+  if (_tableCache_[name]) return _tableCache_[name].slice();
+
   var sheet = getSheet_(name);
   ensureHeaders_(sheet, headers);
   var lastRow = sheet.getLastRow();
-  if (lastRow < 2) return [];
-  var values = sheet.getRange(2, 1, lastRow - 1, headers.length).getValues();
   var out = [];
-  for (var i = 0; i < values.length; i++) {
-    var row = values[i];
-    if (row[0] === "" || row[0] === null) continue; // skip blank rows
-    var obj = { _row: i + 2 };
-    for (var h = 0; h < headers.length; h++) {
-      obj[headers[h]] = row[h];
+  if (lastRow >= 2) {
+    var values = sheet.getRange(2, 1, lastRow - 1, headers.length).getValues();
+    for (var i = 0; i < values.length; i++) {
+      var row = values[i];
+      if (row[0] === "" || row[0] === null) continue; // skip blank rows
+      var obj = { _row: i + 2 };
+      for (var h = 0; h < headers.length; h++) {
+        obj[headers[h]] = row[h];
+      }
+      out.push(obj);
     }
-    out.push(obj);
   }
-  return out;
+  _tableCache_[name] = out;
+  return out.slice();
 }
 
 /** Appends a new row. Fills in an id if the object doesn't already have one. */
@@ -134,6 +165,7 @@ function insertRow(name, headers, obj) {
     return v === undefined || v === null ? "" : v;
   });
   sheet.appendRow(row);
+  invalidateTable_(name);
   return obj;
 }
 
@@ -161,6 +193,7 @@ function updateRowById(name, headers, id, patch) {
     return v === undefined || v === null ? "" : v;
   });
   sheet.getRange(target._row, 1, 1, headers.length).setValues([rowValues]);
+  invalidateTable_(name);
   return merged;
 }
 
@@ -177,6 +210,7 @@ function deleteRowsWhere(name, headers, predicate) {
   toDelete.forEach(function (rowNum) {
     sheet.deleteRow(rowNum);
   });
+  if (toDelete.length > 0) invalidateTable_(name);
 }
 
 function findOne_(name, headers, predicate) {

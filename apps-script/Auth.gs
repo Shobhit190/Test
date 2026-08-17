@@ -10,6 +10,7 @@
 
 /** RPC: called from the client login form. */
 function login(email, password) {
+  resetTableCache_();
   var user = findEmployeeResolved_(function (u) {
     return u.email === str_(email).trim().toLowerCase();
   });

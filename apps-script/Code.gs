@@ -19,6 +19,7 @@ function include(filename) {
 
 /** RPC: dashboard data for the logged-in user. */
 function getDashboard(userId) {
+  resetTableCache_();
   var user = requireUser_(userId);
   var cycle = getActiveCycle_();
   var myGoal = getOrCreateGoal_(userId);
@@ -76,6 +77,7 @@ function getDashboard(userId) {
 
 /** RPC: the employee's own goal-editing screen. */
 function getGoalScreen(userId) {
+  resetTableCache_();
   requireUser_(userId);
   var goal = getOrCreateGoal_(userId);
   var editable = goal.status === "DRAFT" || goal.status === "RETURNED";
@@ -87,6 +89,7 @@ function getGoalScreen(userId) {
 
 /** RPC: replace this goal's KRAs/KPIs with the given (unvalidated) draft content. */
 function saveGoalDraft(userId, goalId, kras) {
+  resetTableCache_();
   requireUser_(userId);
   var goal = findOne_(TABLES.GOALS.name, TABLES.GOALS.headers, function (g) {
     return g.id === goalId;
@@ -145,6 +148,7 @@ function saveGoalDraft(userId, goalId, kras) {
 
 /** RPC: validate and submit a goal for manager approval. */
 function submitGoal(userId, goalId) {
+  resetTableCache_();
   requireUser_(userId);
   var goal = getFullGoal_(goalId);
   if (!goal) return { ok: false, errors: ["Goal not found."] };
@@ -180,6 +184,7 @@ function submitGoal(userId, goalId) {
  * self-rate against. Always editable, saved independently of any goal.
  */
 function getPromotionScreen(userId) {
+  resetTableCache_();
   requireUser_(userId);
   var info = getPromotionCompetenciesForUser_(userId);
   var existing = readTable(TABLES.PROMOTION_RATINGS.name, TABLES.PROMOTION_RATINGS.headers).filter(function (r) {
@@ -198,6 +203,7 @@ function getPromotionScreen(userId) {
 
 /** RPC: replace the employee's promotion-readiness self-ratings wholesale. */
 function savePromotionRatings(userId, ratings) {
+  resetTableCache_();
   requireUser_(userId);
   deleteRowsWhere(TABLES.PROMOTION_RATINGS.name, TABLES.PROMOTION_RATINGS.headers, function (r) {
     return r.employeeId === userId;
@@ -217,6 +223,7 @@ function savePromotionRatings(userId, ratings) {
 
 /** RPC: the manager/HR approval queue. */
 function getApprovalQueue(userId) {
+  resetTableCache_();
   var user = requireUser_(userId);
   if (user.systemRole !== "MANAGER" && user.systemRole !== "HR_ADMIN") {
     throw new Error("You don't have access to the approval queue.");
@@ -266,6 +273,7 @@ function getApprovalQueue(userId) {
 
 /** RPC: full detail view of a single goal, for a manager/HR reviewer. */
 function getApprovalDetail(userId, goalId) {
+  resetTableCache_();
   var user = requireUser_(userId);
   var goal = getFullGoal_(goalId);
   if (!goal) throw new Error("Goal not found.");
@@ -279,6 +287,7 @@ function getApprovalDetail(userId, goalId) {
 
 /** RPC: approve or return a submitted goal. action is "APPROVE" or "RETURN". */
 function decideGoal(userId, goalId, action, comment) {
+  resetTableCache_();
   var user = requireUser_(userId);
   var goal = findOne_(TABLES.GOALS.name, TABLES.GOALS.headers, function (g) {
     return g.id === goalId;
