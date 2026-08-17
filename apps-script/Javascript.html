@@ -7,11 +7,13 @@
     view: "login",
     loginError: null,
     busy: false,
-    goal: null, // { goal, editable, designationName, competencyOptions }
+    goal: null, // { goal, editable }
     kras: [],
-    ratings: [],
     goalMessage: null,
     goalErrors: [],
+    promotion: null, // { currentLevelName, targetLevelName, isTopLevel, options, ratings }
+    promotionRatings: [],
+    promotionMessage: null,
     approvals: null, // { pending, decided, isHrAdmin }
     approvalDetail: null,
     approvalReturning: false,
@@ -19,7 +21,7 @@
     approvalError: null,
   };
 
-  var MIN_KRAS = 2, MAX_KRAS = 6, MAX_KPIS_PER_KRA = 3, MIN_COMPETENCY_RATINGS = 3, KRA_WEIGHT_TOTAL = 100;
+  var MIN_KRAS = 2, MAX_KRAS = 6, MAX_KPIS_PER_KRA = 3, KRA_WEIGHT_TOTAL = 100;
 
   function uid() {
     return "k" + Math.random().toString(36).slice(2, 10);
@@ -56,7 +58,8 @@
   function navHtml() {
     var u = state.user;
     var links = '<span class="navlink" onclick="goDashboard()">Goal Setting</span>' +
-      '<span class="navlink" onclick="goGoal()">My Goal</span>';
+      '<span class="navlink" onclick="goGoal()">My Goal</span>' +
+      '<span class="navlink" onclick="goPromotion()">Development</span>';
     if (u.systemRole === "MANAGER" || u.systemRole === "HR_ADMIN") {
       links += '<span class="navlink" onclick="goApprovals()">Approvals</span>';
     }
@@ -130,11 +133,11 @@
   // Guidelines (shown once, right after login, before the dashboard)
   // ---------------------------------------------------------------------
   var GUIDELINES = [
-    "Set 2–6 KRAs that together cover 90% of your role, with weights summing to 100%.",
+    "Set 2–6 KRAs for your goal, with weights summing to 100%.",
     "Add up to 3 KPIs per KRA to make each one measurable.",
-    "Self-rate on at least 3 role competencies (10% of your goal) using the level guide shown for each one.",
     "Save your draft any time — nothing is final until you submit it.",
     "Once submitted, your manager can approve it or send it back with comments for you to revise and resubmit.",
+    "Separately, check the Development tab to self-rate against your next promotion level's competencies — it's not scored as part of your goal, but it's tracked over time, so take it seriously.",
   ];
 
   function goGuidelines() {
@@ -186,9 +189,10 @@
     html += profileRow_("Employee Code", p.employeeCode);
     html += profileRow_("Brand", p.brand);
     html += profileRow_("Designation", p.designationName);
+    html += profileRow_("Business Role", p.businessRole);
     html += profileRow_("Manager", p.managerName);
-    html += profileRow_("PMS Cycle", p.pmsCycle);
-    html += profileRow_("Role", p.role);
+    html += profileRow_("Goal Cycle", p.goalCycle);
+    html += profileRow_("Assessment Period", p.assessmentPeriod);
     html += "</div></div>";
 
     html += '<div class="card mt-6"><div class="row">';
@@ -197,10 +201,7 @@
       '<p class="small muted mt-1">' +
       myGoal.kras.length +
       (myGoal.kras.length === 1 ? " KRA" : " KRAs") +
-      " &middot; " +
-      myGoal.competencyRatings.length +
-      (myGoal.competencyRatings.length === 1 ? " competency" : " competencies") +
-      " rated</p></div>";
+      "</p></div>";
     html +=
       '<div class="gap-3">' +
       statusBadge(myGoal.status) +
@@ -244,9 +245,9 @@
     RETURNED: "Returned for revision",
   };
 
-  function goGoal() {
+  function goGoal(preserveMessage) {
     state.view = "goal";
-    state.goalMessage = null;
+    if (!preserveMessage) state.goalMessage = null;
     state.goalErrors = [];
     setContent('<div class="center-screen"><p class="spinner-inline">Loading…</p></div>');
     runRpc("getGoalScreen", state.user.id)
@@ -263,9 +264,6 @@
             }),
           };
         });
-        state.ratings = data.goal.competencyRatings.map(function (r) {
-          return { competencyId: r.competencyId, subLevel: r.subLevel, selfComment: r.selfComment || "" };
-        });
         renderGoal();
       })
       .catch(showFatal);
@@ -275,13 +273,6 @@
     return state.kras.reduce(function (sum, k) {
       return sum + (Number(k.weight) || 0);
     }, 0);
-  }
-
-  function competencyOptionById(id) {
-    var opt = state.goal.competencyOptions.filter(function (o) {
-      return o.competency.id === id;
-    })[0];
-    return opt ? opt.competency : null;
   }
 
   function levelForSubLevel(levels, subLevel) {
@@ -332,7 +323,7 @@
     // --- KRAs ---
     var total = weightTotal();
     html += '<div class="mt-6"><div class="row">';
-    html += "<h2>KRAs &amp; KPIs (90%)</h2>";
+    html += "<h2>KRAs &amp; KPIs</h2>";
     html +=
       '<span class="badge ' +
       (total === KRA_WEIGHT_TOTAL ? "badge-ok" : "badge-bad") +
@@ -440,106 +431,6 @@
     }
     html += "</div>"; // KRA section
 
-    // --- Competencies ---
-    html += '<div class="mt-8"><h2>Role Competencies (10%)</h2>';
-    html +=
-      '<p class="small muted mt-1">' +
-      (state.goal.designationName ? "Options shown for: " + esc(state.goal.designationName) + ". " : "") +
-      "Self-rate on at least " +
-      MIN_COMPETENCY_RATINGS +
-      " of the competencies below (1&ndash;10 scale).</p>";
-
-    html += '<div class="stack mt-4">';
-    state.ratings.forEach(function (rating) {
-      var comp = competencyOptionById(rating.competencyId);
-      if (!comp) return;
-      var level = levelForSubLevel(comp.levels, rating.subLevel);
-      html += '<div class="card">';
-      html += '<div class="row-start"><div>';
-      html +=
-        '<p style="font-weight:500">' +
-        esc(comp.name) +
-        (comp.isCore
-          ? ' <span class="badge" style="background:#eef2ff;color:#4338ca">Core</span>'
-          : "") +
-        "</p>";
-      html += '<p class="small muted">' + esc(comp.cluster) + " &middot; " + esc(comp.subCluster) + "</p>";
-      html += "</div>";
-      if (editable) {
-        html +=
-          '<span class="btn-ghost" style="cursor:pointer" onclick="removeRating(\'' +
-          rating.competencyId +
-          '\')">Remove</span>';
-      }
-      html += "</div>";
-
-      html += '<div class="gap-3 mt-3">';
-      html +=
-        '<input type="range" min="1" max="10" value="' +
-        rating.subLevel +
-        '" ' +
-        (editable ? "" : "disabled ") +
-        'oninput="updateRating(\'' +
-        rating.competencyId +
-        '\',\'subLevel\',this.value)" />';
-      html +=
-        '<span class="badge" style="background:#f3f4f6;color:#111827;white-space:nowrap" id="level-badge-' +
-        rating.competencyId +
-        '">' +
-        (level ? level.level : "") +
-        " &middot; " +
-        rating.subLevel +
-        "/10</span></div>";
-      html +=
-        '<p class="small mt-1" style="font-weight:600" id="level-name-' +
-        rating.competencyId +
-        '">' +
-        (level ? esc(level.levelName) : "") +
-        "</p>";
-
-      html +=
-        '<ul class="bullets small muted mt-2" id="level-bullets-' +
-        rating.competencyId +
-        '">' +
-        (level
-          ? level.behaviourIndicators.map(function (b) { return "<li>" + esc(b) + "</li>"; }).join("")
-          : "") +
-        "</ul>";
-
-      html +=
-        '<textarea rows="2" class="mt-3" placeholder="Self-assessment comment (optional)" ' +
-        (editable ? "" : "disabled ") +
-        'oninput="updateRating(\'' +
-        rating.competencyId +
-        '\',\'selfComment\',this.value)">' +
-        esc(rating.selfComment) +
-        "</textarea>";
-      html += "</div>";
-    });
-    html += "</div>";
-
-    if (editable) {
-      var unrated = state.goal.competencyOptions.filter(function (o) {
-        return !state.ratings.some(function (r) {
-          return r.competencyId === o.competency.id;
-        });
-      });
-      if (unrated.length > 0) {
-        html += '<select class="mt-3" onchange="addRatingFromSelect(this)"><option value="">+ Add a competency to self-rate…</option>';
-        unrated.forEach(function (o) {
-          html +=
-            '<option value="' +
-            o.competency.id +
-            '">' +
-            esc(o.competency.name) +
-            (o.competency.isCore ? " (Core)" : "") +
-            "</option>";
-        });
-        html += "</select>";
-      }
-    }
-    html += "</div>"; // competency section
-
     if (editable) {
       html += '<div class="gap-2 mt-8" style="border-top:1px solid #e5e7eb;padding-top:20px">';
       html += '<button class="btn-secondary" onclick="saveDraft()" id="save-btn">Save draft</button>';
@@ -599,47 +490,6 @@
     });
     renderGoal();
   }
-  function addRatingFromSelect(selectEl) {
-    var id = selectEl.value;
-    if (id) addRating(id);
-  }
-  function addRating(competencyId) {
-    state.ratings.push({ competencyId: competencyId, subLevel: 5, selfComment: "" });
-    renderGoal();
-  }
-  function updateRating(competencyId, field, value) {
-    state.ratings.forEach(function (r) {
-      if (r.competencyId === competencyId) r[field] = field === "subLevel" ? Number(value) : value;
-    });
-    if (field === "subLevel") updateRatingLevelUI(competencyId);
-    // selfComment has no live dependent UI: no re-render needed.
-  }
-  function updateRatingLevelUI(competencyId) {
-    var rating = state.ratings.filter(function (r) {
-      return r.competencyId === competencyId;
-    })[0];
-    var comp = competencyOptionById(competencyId);
-    if (!rating || !comp) return;
-    var level = levelForSubLevel(comp.levels, rating.subLevel);
-
-    var badge = document.getElementById("level-badge-" + competencyId);
-    if (badge) badge.textContent = (level ? level.level : "") + " · " + rating.subLevel + "/10";
-
-    var nameEl = document.getElementById("level-name-" + competencyId);
-    if (nameEl) nameEl.textContent = level ? level.levelName : "";
-
-    var bulletsEl = document.getElementById("level-bullets-" + competencyId);
-    if (bulletsEl) {
-      bulletsEl.innerHTML = level
-        ? level.behaviourIndicators.map(function (b) { return "<li>" + esc(b) + "</li>"; }).join("")
-        : "";
-    }
-  }
-  function removeRating(competencyId) {
-    state.ratings = state.ratings.filter(function (r) { return r.competencyId !== competencyId; });
-    renderGoal();
-  }
-
   function goalPayload() {
     return {
       kras: state.kras.map(function (k) {
@@ -652,9 +502,6 @@
           }),
         };
       }),
-      ratings: state.ratings.map(function (r) {
-        return { competencyId: r.competencyId, subLevel: r.subLevel, selfComment: r.selfComment };
-      }),
     };
   }
 
@@ -662,14 +509,14 @@
     state.goalMessage = null;
     state.goalErrors = [];
     var payload = goalPayload();
-    runRpc("saveGoalDraft", state.user.id, state.goal.goal.id, payload.kras, payload.ratings)
+    runRpc("saveGoalDraft", state.user.id, state.goal.goal.id, payload.kras)
       .then(function (result) {
         if (!result.ok) {
           state.goalErrors = result.errors;
           renderGoal();
         } else {
           state.goalMessage = "Draft saved.";
-          goGoal();
+          goGoal(true);
         }
       })
       .catch(showFatal);
@@ -679,7 +526,7 @@
     state.goalMessage = null;
     state.goalErrors = [];
     var payload = goalPayload();
-    runRpc("saveGoalDraft", state.user.id, state.goal.goal.id, payload.kras, payload.ratings)
+    runRpc("saveGoalDraft", state.user.id, state.goal.goal.id, payload.kras)
       .then(function (saveResult) {
         if (!saveResult.ok) {
           state.goalErrors = saveResult.errors;
@@ -695,8 +542,182 @@
           renderGoal();
         } else {
           state.goalMessage = "Goal submitted for manager approval.";
-          goGoal();
+          goGoal(true);
         }
+      })
+      .catch(showFatal);
+  }
+
+  // ---------------------------------------------------------------------
+  // Development / promotion-readiness self-assessment
+  // ---------------------------------------------------------------------
+  function goPromotion(preserveMessage) {
+    state.view = "promotion";
+    if (!preserveMessage) state.promotionMessage = null;
+    setContent('<div class="center-screen"><p class="spinner-inline">Loading…</p></div>');
+    runRpc("getPromotionScreen", state.user.id)
+      .then(function (data) {
+        state.promotion = data;
+        var byCompetency = {};
+        data.ratings.forEach(function (r) {
+          byCompetency[r.competencyId] = r;
+        });
+        state.promotionRatings = data.options.map(function (o) {
+          var existing = byCompetency[o.competency.id];
+          return {
+            competencyId: o.competency.id,
+            subLevel: existing ? existing.subLevel : 5,
+            selfComment: existing ? existing.selfComment : "",
+          };
+        });
+        renderPromotion();
+      })
+      .catch(showFatal);
+  }
+
+  function promotionRatingByCompetency_(competencyId) {
+    return state.promotionRatings.filter(function (r) {
+      return r.competencyId === competencyId;
+    })[0];
+  }
+
+  function renderPromotion() {
+    var p = state.promotion;
+    var html = navHtml();
+    html += "<h1>Promotion Readiness</h1>";
+
+    if (state.promotionMessage) {
+      html += '<p class="alert alert-ok mt-4">' + esc(state.promotionMessage) + "</p>";
+    }
+
+    if (!p.currentLevelName) {
+      html +=
+        '<p class="alert alert-warn mt-4">Your Business Role isn\'t set yet, so there are no competencies to ' +
+        "show here. Ask HR to add it to your profile.</p>";
+      setContent(html);
+      return;
+    }
+
+    if (p.isTopLevel) {
+      html +=
+        '<p class="muted mt-1">You\'re at the top of the ladder (' +
+        esc(p.currentLevelName) +
+        "). Rate yourself against your own level's competencies to keep tracking your growth.</p>";
+    } else {
+      html +=
+        '<p class="muted mt-1">You\'re currently ' +
+        esc(p.currentLevelName) +
+        ". These are the competencies expected at the next level, <strong>" +
+        esc(p.targetLevelName) +
+        "</strong>.</p>";
+    }
+    html +=
+      '<p class="small muted mt-2">This isn\'t scored as part of your goal — but it matters. Rate yourself ' +
+      "honestly on what you think you can achieve in each competency; this is what's tracked for your " +
+      "promotion readiness over time, so it's worth taking seriously.</p>";
+
+    html += '<div class="stack mt-6">';
+    p.options.forEach(function (o) {
+      var comp = o.competency;
+      var rating = promotionRatingByCompetency_(comp.id);
+      var level = levelForSubLevel(comp.levels, rating.subLevel);
+      html += '<div class="card">';
+      html += '<div class="row-start"><div>';
+      html += '<p style="font-weight:500">' + esc(comp.name) + "</p>";
+      html += '<p class="small muted">' + esc(comp.cluster) + " &middot; " + esc(comp.subCluster) + "</p>";
+      html += "</div></div>";
+
+      html += '<div class="gap-3 mt-3">';
+      html +=
+        '<input type="range" min="1" max="10" value="' +
+        rating.subLevel +
+        '" oninput="updatePromotionRating(\'' +
+        comp.id +
+        '\',\'subLevel\',this.value)" />';
+      html +=
+        '<span class="badge" style="background:#f3f4f6;color:#111827;white-space:nowrap" id="promo-level-badge-' +
+        comp.id +
+        '">' +
+        (level ? level.level : "") +
+        " &middot; " +
+        rating.subLevel +
+        "/10</span></div>";
+      html +=
+        '<p class="small mt-1" style="font-weight:600" id="promo-level-name-' +
+        comp.id +
+        '">' +
+        (level ? esc(level.levelName) : "") +
+        "</p>";
+
+      html +=
+        '<ul class="bullets small muted mt-2" id="promo-level-bullets-' +
+        comp.id +
+        '">' +
+        (level
+          ? level.behaviourIndicators.map(function (b) { return "<li>" + esc(b) + "</li>"; }).join("")
+          : "") +
+        "</ul>";
+
+      html +=
+        '<textarea rows="2" class="mt-3" placeholder="Self-assessment comment (optional)" ' +
+        'oninput="updatePromotionRating(\'' +
+        comp.id +
+        '\',\'selfComment\',this.value)">' +
+        esc(rating.selfComment) +
+        "</textarea>";
+      html += "</div>";
+      html += "</div>";
+    });
+    html += "</div>";
+
+    html += '<div class="gap-2 mt-8" style="border-top:1px solid #e5e7eb;padding-top:20px">';
+    html += '<button class="btn-primary" onclick="savePromotionRatingsClick()" id="save-promotion-btn">Save ratings</button>';
+    html += "</div>";
+
+    setContent(html);
+  }
+
+  function updatePromotionRating(competencyId, field, value) {
+    var rating = promotionRatingByCompetency_(competencyId);
+    if (!rating) return;
+    rating[field] = field === "subLevel" ? Number(value) : value;
+    if (field === "subLevel") updatePromotionRatingLevelUI(competencyId);
+  }
+
+  function promotionOptionByCompetency_(competencyId) {
+    var opt = state.promotion.options.filter(function (o) {
+      return o.competency.id === competencyId;
+    })[0];
+    return opt ? opt.competency : null;
+  }
+
+  function updatePromotionRatingLevelUI(competencyId) {
+    var rating = promotionRatingByCompetency_(competencyId);
+    var comp = promotionOptionByCompetency_(competencyId);
+    if (!rating || !comp) return;
+    var level = levelForSubLevel(comp.levels, rating.subLevel);
+
+    var badge = document.getElementById("promo-level-badge-" + competencyId);
+    if (badge) badge.textContent = (level ? level.level : "") + " · " + rating.subLevel + "/10";
+
+    var nameEl = document.getElementById("promo-level-name-" + competencyId);
+    if (nameEl) nameEl.textContent = level ? level.levelName : "";
+
+    var bulletsEl = document.getElementById("promo-level-bullets-" + competencyId);
+    if (bulletsEl) {
+      bulletsEl.innerHTML = level
+        ? level.behaviourIndicators.map(function (b) { return "<li>" + esc(b) + "</li>"; }).join("")
+        : "";
+    }
+  }
+
+  function savePromotionRatingsClick() {
+    var btn = document.getElementById("save-promotion-btn");
+    if (btn) btn.disabled = true;
+    runRpc("savePromotionRatings", state.user.id, state.promotionRatings)
+      .then(function () {
+        state.promotionMessage = "Ratings saved.";
+        goPromotion(true);
       })
       .catch(showFatal);
   }
@@ -777,7 +798,7 @@
       goal.status +
       "</p>";
 
-    html += '<div class="mt-6"><div class="row"><h2>KRAs &amp; KPIs (90%)</h2>';
+    html += '<div class="mt-6"><div class="row"><h2>KRAs &amp; KPIs</h2>';
     html += '<span class="small muted">Total weight: ' + weightSum + "%</span></div>";
     html += '<div class="stack mt-3">';
     goal.kras.forEach(function (kra) {
@@ -794,24 +815,6 @@
             .join("") +
           "</ul>";
       }
-      html += "</div>";
-    });
-    html += "</div></div>";
-
-    html += '<div class="mt-8"><h2>Role Competencies (10%)</h2><div class="stack mt-3">';
-    goal.competencyRatings.forEach(function (rating) {
-      var comp = rating.competency;
-      var level = comp ? levelForSubLevel(comp.levels, rating.subLevel) : null;
-      html += '<div class="card"><div class="row"><p style="font-weight:500">' + esc(comp ? comp.name : "") + "</p>";
-      html +=
-        '<span class="badge" style="background:#f3f4f6;color:#111827">' +
-        (level ? level.level : "") +
-        " &middot; " +
-        rating.subLevel +
-        "/10 &middot; " +
-        (level ? esc(level.levelName) : "") +
-        "</span></div>";
-      if (rating.selfComment) html += '<p class="small muted mt-2">' + esc(rating.selfComment) + "</p>";
       html += "</div>";
     });
     html += "</div></div>";

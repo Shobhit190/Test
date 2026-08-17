@@ -20,11 +20,27 @@
  * - systemRole: "EMPLOYEE", "MANAGER", or "HR_ADMIN"
  * - designationName: must exactly match a name in the Designations tab, or
  *   "" for none
+ * - businessRole: their level on the promotion ladder (e.g. "Associate",
+ *   "Manager", "Senior Vice President" -- see the PromotionLevels tab for
+ *   the full list). Not validated here since it doesn't apply to everyone
+ *   (e.g. Faculty) -- leave "" if it doesn't apply.
  * - managerName: must exactly match an existing employee's Name in the
  *   Employee Details sheet (add managers before the people who report to
  *   them), or "" for none
  */
-function addEmployee_(employeeCode, email, name, password, systemRole, brand, designationName, pmsCycle, managerName) {
+function addEmployee_(
+  employeeCode,
+  email,
+  name,
+  password,
+  systemRole,
+  brand,
+  designationName,
+  businessRole,
+  goalCycle,
+  assessmentPeriod,
+  managerName
+) {
   employeeCode = str_(employeeCode).trim();
   email = str_(email).trim().toLowerCase();
   name = str_(name).trim();
@@ -32,7 +48,9 @@ function addEmployee_(employeeCode, email, name, password, systemRole, brand, de
   systemRole = str_(systemRole).trim().toUpperCase();
   brand = str_(brand).trim();
   designationName = str_(designationName).trim();
-  pmsCycle = str_(pmsCycle).trim();
+  businessRole = str_(businessRole).trim();
+  goalCycle = str_(goalCycle).trim();
+  assessmentPeriod = str_(assessmentPeriod).trim();
   managerName = str_(managerName).trim();
 
   if (!employeeCode || !email || !name || !password) {
@@ -82,9 +100,11 @@ function addEmployee_(employeeCode, email, name, password, systemRole, brand, de
     name: name,
     brand: brand,
     designation: designationName,
+    businessRole: businessRole,
     managerName: managerName,
     role: systemRole,
-    pmsCycle: pmsCycle,
+    goalCycle: goalCycle,
+    assessmentPeriod: assessmentPeriod,
     email: email,
     password: password,
   };
@@ -114,7 +134,9 @@ function addEmployeeFromTemplate() {
     "EMPLOYEE", // "EMPLOYEE", "MANAGER", or "HR_ADMIN"
     "Acme Learning", // brand
     "Business Analyst", // designation name, must match the Designations tab exactly, or ""
-    "FY2025-26", // PMS cycle
+    "Associate", // business role / promotion-ladder level, must match the PromotionLevels tab exactly, or ""
+    "FY2025-26", // goal cycle
+    "FY2025-26", // assessment period
     "Jane Manager" // their manager's Name, must match an existing employee exactly, or ""
   );
 }

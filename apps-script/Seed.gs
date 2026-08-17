@@ -2,11 +2,12 @@
  * Run seedAll() to populate every sheet from the embedded reference data
  * plus the demo cycle/users. Safe to re-run at any time, including after
  * you've added real employees: it upserts reference data (Competencies,
- * CompetencyLevels, Designations, RoleCompetencyMap, the FY2025-26 cycle)
- * by matching on name/natural-key rather than wiping the sheet, and it
- * never touches an existing user or any Goal data. The demo accounts are
- * only created if missing -- if you've since edited or removed one, this
- * won't recreate or overwrite it.
+ * CompetencyLevels, Designations, RoleCompetencyMap, PromotionLevels,
+ * PromotionCompetencyMap, the FY2025-26 cycle) by matching on
+ * name/natural-key rather than wiping the sheet, and it never touches an
+ * existing user or any Goal data. The demo accounts are only created if
+ * missing -- if you've since edited or removed one, this won't recreate
+ * or overwrite it.
  */
 
 var NAME_FIX_ = {
@@ -144,9 +145,11 @@ function seedDemoUsersAndCycle_() {
     name: "Hina Rao (HR Admin)",
     brand: "",
     designation: "",
+    businessRole: "",
     managerName: "",
     role: "HR_ADMIN",
-    pmsCycle: "FY2025-26",
+    goalCycle: "FY2025-26",
+    assessmentPeriod: "FY2025-26",
     email: "hr.admin@example.com",
     password: "password123",
   });
@@ -155,9 +158,11 @@ function seedDemoUsersAndCycle_() {
     name: "Mohan Iyer (Manager)",
     brand: "",
     designation: "Academic Head",
+    businessRole: "Manager",
     managerName: "",
     role: "MANAGER",
-    pmsCycle: "FY2025-26",
+    goalCycle: "FY2025-26",
+    assessmentPeriod: "FY2025-26",
     email: "manager@example.com",
     password: "password123",
   });
@@ -166,9 +171,11 @@ function seedDemoUsersAndCycle_() {
     name: "Priya Nair (Employee)",
     brand: "",
     designation: "Business Analyst",
+    businessRole: "Associate",
     managerName: manager.name,
     role: "EMPLOYEE",
-    pmsCycle: "FY2025-26",
+    goalCycle: "FY2025-26",
+    assessmentPeriod: "FY2025-26",
     email: "employee@example.com",
     password: "password123",
   });
@@ -194,11 +201,13 @@ function clearGoalData_() {
 function seedAll() {
   var nameToId = seedCompetencyDictionary_();
   var designationNameToId = seedRoleCompetencyMap_(nameToId);
+  seedPromotionLevels_();
   seedDemoUsersAndCycle_();
   Logger.log(
-    "Seed complete: %s competencies, %s designations.",
+    "Seed complete: %s competencies, %s designations, %s promotion levels.",
     Object.keys(nameToId).length,
-    Object.keys(designationNameToId).length
+    Object.keys(designationNameToId).length,
+    PROMOTION_LEVELS_DATA.length
   );
   Logger.log("Demo login password for all seeded users: password123");
 }

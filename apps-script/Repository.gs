@@ -3,13 +3,14 @@
  */
 
 /**
- * Employee Details rows store Designation and Manager as free text (typed
- * directly into the sheet, or via Admin.gs) rather than internal ids.
- * This resolves both dynamically against the Designations tab and other
- * employees' Name column, and normalizes "role" into the systemRole shape
- * the rest of the app expects. Always read employees through this (or
- * findEmployeeResolved_) rather than raw readTable/findOne_ on TABLES.USERS,
- * so a designation/manager rename in the sheet takes effect immediately.
+ * Employee Details rows store Designation, Business Role and Manager as
+ * free text (typed directly into the sheet, or via Admin.gs) rather than
+ * internal ids. This resolves all of them dynamically against the
+ * Designations / PromotionLevels tabs and other employees' Name column,
+ * and normalizes "role" into the systemRole shape the rest of the app
+ * expects. Always read employees through this (or findEmployeeResolved_)
+ * rather than raw readTable/findOne_ on TABLES.USERS, so a rename in the
+ * sheet takes effect immediately.
  */
 function readEmployeesResolved_() {
   var raw = readTable(TABLES.USERS.name, TABLES.USERS.headers);
@@ -18,12 +19,18 @@ function readEmployeesResolved_() {
   designations.forEach(function (d) {
     designationIdByName[str_(d.name).trim().toLowerCase()] = d.id;
   });
+  var promotionLevels = readTable(TABLES.PROMOTION_LEVELS.name, TABLES.PROMOTION_LEVELS.headers);
+  var promotionLevelIdByName = {};
+  promotionLevels.forEach(function (l) {
+    promotionLevelIdByName[str_(l.name).trim().toLowerCase()] = l.id;
+  });
   var idByName = {};
   raw.forEach(function (u) {
     idByName[str_(u.name).trim().toLowerCase()] = u.id;
   });
   return raw.map(function (u) {
     var designationName = str_(u.designation).trim();
+    var businessRole = str_(u.businessRole).trim();
     var managerName = str_(u.managerName).trim();
     return {
       id: u.id,
@@ -32,10 +39,13 @@ function readEmployeesResolved_() {
       brand: str_(u.brand).trim(),
       designationName: designationName,
       designationId: designationName ? designationIdByName[designationName.toLowerCase()] || null : null,
+      businessRole: businessRole,
+      promotionLevelId: businessRole ? promotionLevelIdByName[businessRole.toLowerCase()] || null : null,
       managerName: managerName,
       managerId: managerName ? idByName[managerName.toLowerCase()] || null : null,
       systemRole: str_(u.role).trim().toUpperCase(),
-      pmsCycle: str_(u.pmsCycle).trim(),
+      goalCycle: str_(u.goalCycle).trim(),
+      assessmentPeriod: str_(u.assessmentPeriod).trim(),
       email: str_(u.email).trim().toLowerCase(),
       password: str_(u.password),
     };
@@ -118,45 +128,55 @@ function groupBy_(rows, key) {
   return out;
 }
 
-function getRequiredCompetenciesForUser_(userId) {
+/**
+ * The competencies an employee should self-rate for promotion readiness:
+ * their *next* PromotionLevels rung's promotion-critical competencies (or
+ * their own level's, if they're already at the top of the ladder). Returns
+ * an empty options list if their Business Role doesn't resolve to a known
+ * level (blank, a typo, or intentionally out of scope like Faculty).
+ */
+function getPromotionCompetenciesForUser_(userId) {
   var user = requireUser_(userId);
+  var levels = readTable(TABLES.PROMOTION_LEVELS.name, TABLES.PROMOTION_LEVELS.headers);
+  var levelsById = indexBy_(levels, "id");
+  var currentLevel = user.promotionLevelId ? levelsById[user.promotionLevelId] : null;
+
+  if (!currentLevel) {
+    return {
+      currentLevelName: user.businessRole || null,
+      targetLevelName: null,
+      isTopLevel: false,
+      options: [],
+    };
+  }
+
+  var nextLevel = levels.filter(function (l) {
+    return Number(l.order) === Number(currentLevel.order) + 1;
+  })[0];
+  var isTopLevel = !nextLevel;
+  var targetLevel = nextLevel || currentLevel;
+
   var competencies = readTable(TABLES.COMPETENCIES.name, TABLES.COMPETENCIES.headers);
-  var levels = readTable(TABLES.COMPETENCY_LEVELS.name, TABLES.COMPETENCY_LEVELS.headers);
+  var compLevels = readTable(TABLES.COMPETENCY_LEVELS.name, TABLES.COMPETENCY_LEVELS.headers);
   var competenciesById = indexBy_(competencies, "id");
-  var levelsByCompetency = groupBy_(levels, "competencyId");
+  var levelsByCompetency = groupBy_(compLevels, "competencyId");
 
-  var roleMap = readTable(TABLES.ROLE_COMPETENCY_MAP.name, TABLES.ROLE_COMPETENCY_MAP.headers);
-  var roleMapped = roleMap.filter(function (m) {
-    return (
-      m.designationId === user.designationId &&
-      (m.isRequired === true || m.isRequired === "TRUE" || m.isRequired === "true")
-    );
-  });
-
-  var coreCompetencies = competencies.filter(function (c) {
-    return c.isCore === true || c.isCore === "TRUE" || c.isCore === "true";
-  });
-
-  var seen = {};
-  var options = [];
-  roleMapped.forEach(function (m) {
-    if (seen[m.competencyId]) return;
-    seen[m.competencyId] = true;
-    var comp = getCompetencyWithLevels_(m.competencyId, competenciesById, levelsByCompetency);
-    if (comp) options.push({ competency: comp, fromRole: true });
-  });
-  coreCompetencies.forEach(function (c) {
-    if (seen[c.id]) return;
-    seen[c.id] = true;
-    var comp = getCompetencyWithLevels_(c.id, competenciesById, levelsByCompetency);
-    if (comp) options.push({ competency: comp, fromRole: false });
-  });
-  options.sort(function (a, b) {
-    return a.competency.name.localeCompare(b.competency.name);
-  });
+  var options = readTable(TABLES.PROMOTION_COMPETENCY_MAP.name, TABLES.PROMOTION_COMPETENCY_MAP.headers)
+    .filter(function (m) {
+      return m.levelId === targetLevel.id;
+    })
+    .map(function (m) {
+      var comp = getCompetencyWithLevels_(m.competencyId, competenciesById, levelsByCompetency);
+      return comp ? { competency: comp } : null;
+    })
+    .filter(function (o) {
+      return o;
+    });
 
   return {
-    designationName: user.designationName || null,
+    currentLevelName: currentLevel.name,
+    targetLevelName: targetLevel.name,
+    isTopLevel: isTopLevel,
     options: options,
   };
 }
@@ -196,25 +216,6 @@ function getFullGoal_(goalId) {
     };
   });
 
-  var competencies = readTable(TABLES.COMPETENCIES.name, TABLES.COMPETENCIES.headers);
-  var levels = readTable(TABLES.COMPETENCY_LEVELS.name, TABLES.COMPETENCY_LEVELS.headers);
-  var competenciesById = indexBy_(competencies, "id");
-  var levelsByCompetency = groupBy_(levels, "competencyId");
-
-  var ratings = readTable(TABLES.COMPETENCY_RATINGS.name, TABLES.COMPETENCY_RATINGS.headers)
-    .filter(function (r) {
-      return r.goalId === goalId;
-    })
-    .map(function (r) {
-      return {
-        id: r.id,
-        competencyId: r.competencyId,
-        subLevel: Number(r.subLevel),
-        selfComment: r.selfComment,
-        competency: getCompetencyWithLevels_(r.competencyId, competenciesById, levelsByCompetency),
-      };
-    });
-
   var users = readEmployeesResolved_();
   var usersById = indexBy_(users, "id");
   var history = readTable(TABLES.APPROVAL_HISTORY.name, TABLES.APPROVAL_HISTORY.headers)
@@ -248,7 +249,6 @@ function getFullGoal_(goalId) {
     submittedAt: goal.submittedAt,
     approvedAt: goal.approvedAt,
     kras: kras,
-    competencyRatings: ratings,
     approvalHistory: history,
   };
 }

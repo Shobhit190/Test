@@ -66,9 +66,10 @@ function getDashboard(userId) {
       name: user.name,
       brand: user.brand,
       designationName: user.designationName,
+      businessRole: user.businessRole,
       managerName: user.managerName,
-      pmsCycle: user.pmsCycle,
-      role: user.systemRole,
+      goalCycle: user.goalCycle,
+      assessmentPeriod: user.assessmentPeriod,
     },
   };
 }
@@ -77,18 +78,15 @@ function getDashboard(userId) {
 function getGoalScreen(userId) {
   requireUser_(userId);
   var goal = getOrCreateGoal_(userId);
-  var required = getRequiredCompetenciesForUser_(userId);
   var editable = goal.status === "DRAFT" || goal.status === "RETURNED";
   return {
     goal: goal,
     editable: editable,
-    designationName: required.designationName,
-    competencyOptions: required.options,
   };
 }
 
-/** RPC: replace this goal's KRAs/KPIs/ratings with the given (unvalidated) draft content. */
-function saveGoalDraft(userId, goalId, kras, ratings) {
+/** RPC: replace this goal's KRAs/KPIs with the given (unvalidated) draft content. */
+function saveGoalDraft(userId, goalId, kras) {
   requireUser_(userId);
   var goal = findOne_(TABLES.GOALS.name, TABLES.GOALS.headers, function (g) {
     return g.id === goalId;
@@ -138,18 +136,6 @@ function saveGoalDraft(userId, goalId, kras, ratings) {
       });
   });
 
-  deleteRowsWhere(TABLES.COMPETENCY_RATINGS.name, TABLES.COMPETENCY_RATINGS.headers, function (r) {
-    return r.goalId === goalId;
-  });
-  ratings.forEach(function (r) {
-    insertRow(TABLES.COMPETENCY_RATINGS.name, TABLES.COMPETENCY_RATINGS.headers, {
-      goalId: goalId,
-      competencyId: r.competencyId,
-      subLevel: r.subLevel,
-      selfComment: str_(r.selfComment).trim(),
-    });
-  });
-
   updateRowById(TABLES.GOALS.name, TABLES.GOALS.headers, goalId, {
     updatedAt: new Date().toISOString(),
   });
@@ -167,14 +153,7 @@ function submitGoal(userId, goalId) {
     return { ok: false, errors: ["This goal has already been submitted."] };
   }
 
-  var kraErrors = validateKras_(goal.kras);
-  var required = getRequiredCompetenciesForUser_(userId);
-  var allowedIds = required.options.map(function (o) {
-    return o.competency.id;
-  });
-  var competencyErrors = validateCompetencyRatings_(goal.competencyRatings, allowedIds);
-
-  var errors = kraErrors.concat(competencyErrors);
+  var errors = validateKras_(goal.kras);
   if (errors.length > 0) return { ok: false, errors: errors };
 
   var now = new Date().toISOString();
@@ -192,6 +171,48 @@ function submitGoal(userId, goalId) {
   });
 
   return { ok: true, errors: [] };
+}
+
+/**
+ * RPC: the employee's promotion-readiness self-assessment screen. Not part
+ * of goal-setting -- shows the competencies required for their *next*
+ * Business Role level (or their own, if already at the top), for them to
+ * self-rate against. Always editable, saved independently of any goal.
+ */
+function getPromotionScreen(userId) {
+  requireUser_(userId);
+  var info = getPromotionCompetenciesForUser_(userId);
+  var existing = readTable(TABLES.PROMOTION_RATINGS.name, TABLES.PROMOTION_RATINGS.headers).filter(function (r) {
+    return r.employeeId === userId;
+  });
+  return {
+    currentLevelName: info.currentLevelName,
+    targetLevelName: info.targetLevelName,
+    isTopLevel: info.isTopLevel,
+    options: info.options,
+    ratings: existing.map(function (r) {
+      return { competencyId: r.competencyId, subLevel: Number(r.subLevel), selfComment: r.selfComment };
+    }),
+  };
+}
+
+/** RPC: replace the employee's promotion-readiness self-ratings wholesale. */
+function savePromotionRatings(userId, ratings) {
+  requireUser_(userId);
+  deleteRowsWhere(TABLES.PROMOTION_RATINGS.name, TABLES.PROMOTION_RATINGS.headers, function (r) {
+    return r.employeeId === userId;
+  });
+  var now = new Date().toISOString();
+  ratings.forEach(function (r) {
+    insertRow(TABLES.PROMOTION_RATINGS.name, TABLES.PROMOTION_RATINGS.headers, {
+      employeeId: userId,
+      competencyId: r.competencyId,
+      subLevel: r.subLevel,
+      selfComment: str_(r.selfComment).trim(),
+      updatedAt: now,
+    });
+  });
+  return { ok: true };
 }
 
 /** RPC: the manager/HR approval queue. */
