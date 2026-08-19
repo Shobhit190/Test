@@ -67,7 +67,6 @@ function getDashboard(userId) {
       name: user.name,
       brand: user.brand,
       designationName: user.designationName,
-      businessRole: user.businessRole,
       managerName: user.managerName,
       goalCycle: user.goalCycle,
       assessmentPeriod: user.assessmentPeriod,
@@ -195,6 +194,8 @@ function getPromotionScreen(userId) {
     targetLevelName: info.targetLevelName,
     isTopLevel: info.isTopLevel,
     options: info.options,
+    targetMaturityMin: info.targetMaturityMin,
+    targetMaturityMax: info.targetMaturityMax,
     ratings: existing.map(function (r) {
       return { competencyId: r.competencyId, subLevel: Number(r.subLevel), selfComment: r.selfComment };
     }),

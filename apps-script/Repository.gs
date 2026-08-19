@@ -153,6 +153,8 @@ function getPromotionCompetenciesForUser_(userId) {
       targetLevelName: null,
       isTopLevel: false,
       options: [],
+      targetMaturityMin: null,
+      targetMaturityMax: null,
     };
   }
 
@@ -184,6 +186,8 @@ function getPromotionCompetenciesForUser_(userId) {
     targetLevelName: targetLevel.name,
     isTopLevel: isTopLevel,
     options: options,
+    targetMaturityMin: Number(targetLevel.maturityMin),
+    targetMaturityMax: Number(targetLevel.maturityMax),
   };
 }
 

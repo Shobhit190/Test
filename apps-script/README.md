@@ -119,20 +119,27 @@ and control who has access to it.
 Right after signing in, employees see a one-time **guidelines** screen
 (edit the `GUIDELINES` array near the top of `Javascript.html` to change
 the text) before landing on the dashboard. The dashboard also shows a
-**My Details** card with their Employee Code, Brand, Designation, Business
-Role, Manager, Goal Cycle, and Assessment Period — everything from their
-Employee Details row except Email, Password, and the internal
-permissions Role.
+**My Details** card with their Employee Code, Brand, Designation, Manager,
+Goal Cycle, and Assessment Period. Business Role isn't shown here (it's
+usually just a duplicate of Designation now that it auto-resolves — see
+below) but still drives what they see on the Development tab; the internal
+permissions Role and their Email/Password aren't shown either.
 
 ## Promotion readiness (the "Development" tab)
 
 Separate from goal-setting, every employee has a **Development** screen
-where they self-rate against the competencies expected at their *next*
-level on the Full-Time promotion ladder (their own level's competencies,
-if they're already at the top). This isn't scored as part of the goal —
-KRAs are the whole goal now — but it's tracked as a standing development
-record (`PromotionRatings`), independent of any goal cycle, so it survives
-`clearGoalData_()` and re-seeding.
+(titled "Role Readiness") where they self-rate against the competencies
+expected at their *next* level on the Full-Time promotion ladder (their own
+level's competencies, if they're already at the top). This isn't scored as
+part of the goal — KRAs are the whole goal now — but it's tracked as a
+standing development record (`PromotionRatings`), independent of any goal
+cycle, so it survives `clearGoalData_()` and re-seeding.
+
+The screen also shows an **ideal average rating badge** at the top (e.g.
+"Ideal average rating expected: 4–5/10"), pulled from the target level's
+`maturityMin`/`maturityMax` in the PromotionLevels tab — generic, with no
+role name attached, so a Senior Associate sees Assistant Manager's ideal
+average without it being spelled out.
 
 **A goal can't be submitted until every competency on this screen has been
 rated at least once** (see `validatePromotionRatingsComplete_()` in
