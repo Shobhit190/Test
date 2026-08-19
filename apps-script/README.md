@@ -1,4 +1,4 @@
-# Goal Setting — Google Apps Script version
+# Elevate Goal Setting Portal — Google Apps Script version
 
 KRA/KPI goal entry with weight validation, manager Submit → Approve/Return →
 Resubmit workflow, dashboards, and a separate promotion-readiness
@@ -57,7 +57,10 @@ Apps Script's `HtmlService`.
    - Click **Deploy**, authorize again if prompted, then copy the web app URL.
 6. **Open the URL.** You'll see the login screen.
 
-Demo accounts (password `password123` for all — seeded by `seedAll`):
+Demo accounts (password `password123` for all — seeded by `seedAll`). The
+login screen itself no longer lists these — it just tells people to sign in
+with their work email and their Employee Code as the password, since that's
+what real employees will actually do (see "Adding real employees" below):
 
 | Email | Role | Business Role |
 |---|---|---|
@@ -113,6 +116,14 @@ next cell over — hashing it would only add friction, not real security.
 This tool was already documented as not production-grade auth (see
 Notes/limitations below); treat the Sheet itself as the sensitive asset
 and control who has access to it.
+
+## Branding
+
+The Elevate Education logo is embedded directly in `Javascript.html` as a
+base64 `LOGO_BASE64` constant (no external image hosting needed) — it shows
+on the login screen and in the top nav bar on every authenticated screen.
+To swap it for a new logo, replace that constant's value with a new
+base64-encoded PNG.
 
 ## What employees see after logging in
 
