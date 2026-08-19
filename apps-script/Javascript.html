@@ -19,6 +19,8 @@
     approvalReturning: false,
     approvalComment: "",
     approvalError: null,
+    reportMessage: null,
+    reportError: null,
   };
 
   var MIN_KRAS = 2, MAX_KRAS = 6, MAX_KPIS_PER_KRA = 3, KRA_WEIGHT_TOTAL = 100;
@@ -62,6 +64,9 @@
       '<span class="navlink" onclick="goPromotion()">Development</span>';
     if (u.systemRole === "MANAGER" || u.systemRole === "HR_ADMIN") {
       links += '<span class="navlink" onclick="goApprovals()">Approvals</span>';
+    }
+    if (u.systemRole === "HR_ADMIN") {
+      links += '<span class="navlink" onclick="goReport()">Report</span>';
     }
     return (
       '<nav class="topnav"><div class="left">' + links + '</div>' +
@@ -137,7 +142,7 @@
     "KPIs are optional — add up to 3 per KRA if they'll help make it measurable.",
     "Save your draft any time — nothing is final until you submit it.",
     "Once submitted, your manager can approve it or send it back with comments for you to revise and resubmit.",
-    "Before you submit, you'll also need to self-rate your promotion-readiness competencies on the Development tab. It isn't scored as part of your goal, but it's tracked over time, so take it seriously.",
+    "On the Development tab, rate yourself on each competency based on your current capabilities and what you believe you can achieve. While these ratings don't impact your goal score, they're tracked over time to support your promotion-readiness assessment, and you'll need to complete them before you can submit your goal — please give an honest, realistic self-assessment.",
   ];
 
   function goGuidelines() {
@@ -245,10 +250,10 @@
     RETURNED: "Returned for revision",
   };
 
-  function goGoal(preserveMessage) {
+  function goGoal(preserveMessage, errorsToShow) {
     state.view = "goal";
     if (!preserveMessage) state.goalMessage = null;
-    state.goalErrors = [];
+    state.goalErrors = errorsToShow || [];
     setContent('<div class="center-screen"><p class="spinner-inline">Loading…</p></div>');
     runRpc("getGoalScreen", state.user.id)
       .then(function (data) {
@@ -442,6 +447,7 @@
       html += '<div class="gap-2 mt-8" style="border-top:1px solid #e5e7eb;padding-top:20px">';
       html += '<button class="btn-secondary" onclick="saveDraft()" id="save-btn">Save draft</button>';
       html += '<button class="btn-primary" onclick="submitGoalClick()" id="submit-btn">Submit for approval</button>';
+      html += '<button class="btn-secondary" onclick="goPromotion()">Next: Rate competencies &rarr;</button>';
       html += "</div>";
     }
 
@@ -628,23 +634,15 @@
     }
 
     if (p.isTopLevel) {
-      html +=
-        '<p class="muted mt-1">You\'re at the top of the ladder (' +
-        esc(p.currentLevelName) +
-        "). Rate yourself against your own level's competencies to keep tracking your growth.</p>";
+      html += '<p class="muted mt-1">Rate yourself against your own level\'s competencies to keep tracking your growth.</p>';
     } else {
-      html +=
-        '<p class="muted mt-1">You\'re currently at the ' +
-        esc(p.currentLevelName) +
-        " level. These are the competencies expected at the next level, <strong>" +
-        esc(p.targetLevelName) +
-        "</strong>.</p>";
+      html += '<p class="muted mt-1">These are the competencies expected for your next step up the ladder.</p>';
     }
     html +=
-      '<p class="small muted mt-2">This isn\'t scored as part of your goal, but you must rate every ' +
-      "competency below before you can submit it. Rate yourself honestly on what you think you can achieve " +
-      "in each one — this is what's tracked for your promotion readiness over time, so it's worth taking " +
-      "seriously.</p>";
+      '<p class="small muted mt-2">Please rate yourself on each competency based on your current capabilities ' +
+      "and what you believe you can achieve. While these ratings do not impact your goal score, they are " +
+      "tracked over time to support your promotion-readiness assessment. Please provide an honest and " +
+      "realistic self-assessment.</p>";
 
     html += '<div class="stack mt-6">';
     p.options.forEach(function (o) {
@@ -702,7 +700,21 @@
 
     html += '<div class="gap-2 mt-8" style="border-top:1px solid #e5e7eb;padding-top:20px">';
     html += '<button class="btn-primary" onclick="savePromotionRatingsClick()" id="save-promotion-btn">Save ratings</button>';
+    if (state.goal && state.goal.editable) {
+      html += '<button class="btn-primary" onclick="submitFromPromotionClick()" id="submit-promotion-btn">Submit for approval</button>';
+    }
     html += "</div>";
+
+    if (!state.goal) {
+      html +=
+        '<p class="small muted mt-3">Set your KRAs on the <span class="link" onclick="goGoal()">My Goal</span> ' +
+        "tab first, then come back here to submit.</p>";
+    } else if (!state.goal.editable) {
+      html +=
+        '<p class="small muted mt-3">Your goal (' +
+        esc(STATUS_LABELS[state.goal.goal.status]) +
+        ") isn't editable right now, so there's nothing to submit.</p>";
+    }
 
     setContent(html);
   }
@@ -741,15 +753,61 @@
     }
   }
 
+  // Disables both Development-tab buttons for the duration of a request,
+  // same reasoning as setGoalButtonsBusy_ on the Goal screen.
+  function setPromotionButtonsBusy_(busy) {
+    ["save-promotion-btn", "submit-promotion-btn"].forEach(function (id) {
+      var btn = document.getElementById(id);
+      if (btn) btn.disabled = busy;
+    });
+  }
+
   function savePromotionRatingsClick() {
-    var btn = document.getElementById("save-promotion-btn");
-    if (btn) btn.disabled = true;
+    setPromotionButtonsBusy_(true);
     runRpc("savePromotionRatings", state.user.id, state.promotionRatings)
       .then(function () {
         state.promotionMessage = "Ratings saved.";
         goPromotion(true);
       })
-      .catch(showFatal);
+      .catch(function (err) {
+        setPromotionButtonsBusy_(false);
+        showFatal(err);
+      });
+  }
+
+  // The Development tab's "Submit for approval": saves the ratings shown
+  // here, then submits the goal already loaded from the My Goal tab this
+  // session (state.goal/state.kras). Only shown when that goal is loaded
+  // and editable -- see renderPromotion().
+  function submitFromPromotionClick() {
+    setPromotionButtonsBusy_(true);
+    var payload = goalPayload();
+    runRpc("savePromotionRatings", state.user.id, state.promotionRatings)
+      .then(function () {
+        return runRpc("saveGoalDraft", state.user.id, state.goal.goal.id, payload.kras);
+      })
+      .then(function (saveResult) {
+        if (!saveResult.ok) {
+          setPromotionButtonsBusy_(false);
+          goGoal(false, saveResult.errors);
+          return null;
+        }
+        return runRpc("submitGoal", state.user.id, state.goal.goal.id);
+      })
+      .then(function (submitResult) {
+        if (!submitResult) return;
+        if (!submitResult.ok) {
+          setPromotionButtonsBusy_(false);
+          goGoal(false, submitResult.errors);
+        } else {
+          state.goalMessage = "Goal submitted for manager approval.";
+          goGoal(true);
+        }
+      })
+      .catch(function (err) {
+        setPromotionButtonsBusy_(false);
+        showFatal(err);
+      });
   }
 
   // ---------------------------------------------------------------------
@@ -910,6 +968,53 @@
       .catch(function (err) {
         state.approvalError = err.message || "Something went wrong.";
         renderApprovalDetail(state.approvalDetail);
+      });
+  }
+
+  // ---------------------------------------------------------------------
+  // Report (HR Admin only)
+  // ---------------------------------------------------------------------
+  function goReport() {
+    state.view = "report";
+    state.reportMessage = null;
+    state.reportError = null;
+    renderReport();
+  }
+
+  function renderReport() {
+    var html = navHtml();
+    html += "<h1>Report</h1>";
+    html +=
+      '<p class="muted mt-1">Regenerates the <strong>Report</strong> tab in your Google Sheet with every ' +
+      "employee's goal status and promotion-readiness rating progress, side by side.</p>";
+
+    if (state.reportMessage) {
+      html += '<p class="alert alert-ok mt-4">' + esc(state.reportMessage) + "</p>";
+    }
+    if (state.reportError) {
+      html += '<p class="alert alert-error mt-4">' + esc(state.reportError) + "</p>";
+    }
+
+    html += '<div class="mt-6">';
+    html += '<button class="btn-primary" onclick="generateReportClick()" id="generate-report-btn">Generate / refresh report</button>';
+    html += "</div>";
+
+    setContent(html);
+  }
+
+  function generateReportClick() {
+    var btn = document.getElementById("generate-report-btn");
+    if (btn) btn.disabled = true;
+    state.reportMessage = null;
+    state.reportError = null;
+    runRpc("generateReportRpc", state.user.id)
+      .then(function (result) {
+        state.reportMessage = "Report tab updated with " + result.rowCount + " employee rows.";
+        renderReport();
+      })
+      .catch(function (err) {
+        state.reportError = err.message || "Something went wrong.";
+        renderReport();
       });
   }
 

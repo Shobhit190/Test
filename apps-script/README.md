@@ -14,7 +14,7 @@ Apps Script's `HtmlService`.
 
 1. **Create a new Google Sheet.** Go to [sheets.google.com](https://sheets.google.com) → Blank spreadsheet.
 2. **Open the script editor.** Extensions → Apps Script.
-3. **Create the files.** This project has 9 script files (`.gs`) and 3 HTML
+3. **Create the files.** This project has 10 script files (`.gs`) and 3 HTML
    files. In the Apps Script editor:
    - Delete the default empty `Code.gs` content (you'll paste real content into it next).
    - For each file below, use the `+` next to "Files" → **Script** (for `.gs`) or **HTML** (for `.html`),
@@ -29,6 +29,7 @@ Apps Script's `HtmlService`.
      - `Seed.gs`
      - `Code.gs`
      - `Admin.gs`
+     - `Report.gs` *(the HR "Report" tab generator)*
      - `Index.html`
      - `Stylesheet.html`
      - `Javascript.html`
@@ -141,6 +142,15 @@ employee whose Business Role/Designation doesn't resolve to a ladder level
 competencies to rate, so their submission isn't blocked by a screen they
 have nothing to fill in.
 
+**The guided flow:** the My Goal screen has a "Next: Rate competencies →"
+button that takes you straight to the Development tab once your KRAs are
+filled in. The Development tab itself then shows a "Submit for approval"
+button (as long as your goal was loaded this session and is still
+editable) — save your ratings and submit from the same screen, without
+switching back to My Goal. Submitting from either screen goes through the
+same `saveGoalDraft` + `submitGoal` calls, so there's no difference in what
+gets validated.
+
 **Business Role auto-resolves from Designation.** For Full-Time staff,
 Designation already *is* a ladder level name (e.g. `Senior Associate`), so
 it's picked up with zero manual data entry. Business Role only needs
@@ -158,6 +168,21 @@ now** — it's a separate qualification-gated track in the source deck, not
 a competency ladder, so Faculty employees should just leave Business Role
 and Designation blank (or use a Designation that doesn't match a ladder
 name) until that's designed.
+
+## HR report (the "Report" tab)
+
+HR Admins get a **Report** nav link with a single "Generate / refresh
+report" button. Clicking it (or running `generateReport()` from the Apps
+Script editor) writes one row per employee to a **Report** tab: Employee
+Code, Name, Brand, Designation, Business Role, Manager, Goal Cycle,
+Assessment Period, Goal Status, KRA Count, Total KRA Weight, Current Level,
+Target Level, Competencies Required, Competencies Rated, Avg Self-Rating,
+and when ratings were last updated — everything in one place instead of
+opening each person's screen individually.
+
+Unlike the hand-editable reference tabs, **Report is pure output**: every
+run fully clears and rewrites it, so don't hand-edit it — your changes
+would just be overwritten next time someone regenerates it.
 
 ## Re-seeding
 

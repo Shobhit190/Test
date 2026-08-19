@@ -221,6 +221,16 @@ function savePromotionRatings(userId, ratings) {
   return { ok: true };
 }
 
+/** RPC: HR-only -- regenerates the "Report" tab in the Sheet. */
+function generateReportRpc(userId) {
+  resetTableCache_();
+  var user = requireUser_(userId);
+  if (user.systemRole !== "HR_ADMIN") {
+    throw new Error("Only HR Admins can generate the report.");
+  }
+  return generateReport();
+}
+
 /** RPC: the manager/HR approval queue. */
 function getApprovalQueue(userId) {
   resetTableCache_();
