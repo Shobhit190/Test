@@ -30,7 +30,13 @@ function readEmployeesResolved_() {
   });
   return raw.map(function (u) {
     var designationName = str_(u.designation).trim();
-    var businessRole = str_(u.businessRole).trim();
+    // Business Role is usually left blank in the sheet: for Full-Time staff,
+    // Designation already IS a ladder level name (e.g. "Senior Associate"),
+    // so it resolves automatically with no separate manual entry. The
+    // Business Role column only needs filling in when Designation doesn't
+    // match a ladder level (e.g. it uses a different job title) but the
+    // person should still be placed on the ladder somewhere else.
+    var businessRole = str_(u.businessRole).trim() || designationName;
     var managerName = str_(u.managerName).trim();
     return {
       id: u.id,
@@ -179,6 +185,38 @@ function getPromotionCompetenciesForUser_(userId) {
     isTopLevel: isTopLevel,
     options: options,
   };
+}
+
+/**
+ * A goal can't be submitted until the employee has self-rated every
+ * competency on their Development tab -- but only when there's something to
+ * rate. Someone with no resolvable Business Role (blank, a typo, or
+ * intentionally out of scope like Faculty) has no options at all, so their
+ * goal submission isn't blocked by a screen they have nothing to fill in.
+ */
+function validatePromotionRatingsComplete_(userId) {
+  var info = getPromotionCompetenciesForUser_(userId);
+  if (info.options.length === 0) return [];
+
+  var existing = readTable(TABLES.PROMOTION_RATINGS.name, TABLES.PROMOTION_RATINGS.headers).filter(function (r) {
+    return r.employeeId === userId;
+  });
+  var ratedCompetencyIds = {};
+  existing.forEach(function (r) {
+    ratedCompetencyIds[r.competencyId] = true;
+  });
+  var missing = info.options.filter(function (o) {
+    return !ratedCompetencyIds[o.competency.id];
+  });
+  if (missing.length === 0) return [];
+
+  return [
+    "Please self-rate all " +
+      info.options.length +
+      " competencies on the Development tab before submitting your goal (" +
+      missing.length +
+      " left to rate).",
+  ];
 }
 
 /** Assembles the full nested Goal object (kras/kpis/ratings/history) for one goal id. */

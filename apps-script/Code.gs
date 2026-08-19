@@ -157,7 +157,7 @@ function submitGoal(userId, goalId) {
     return { ok: false, errors: ["This goal has already been submitted."] };
   }
 
-  var errors = validateKras_(goal.kras);
+  var errors = validateKras_(goal.kras).concat(validatePromotionRatingsComplete_(userId));
   if (errors.length > 0) return { ok: false, errors: errors };
 
   var now = new Date().toISOString();
