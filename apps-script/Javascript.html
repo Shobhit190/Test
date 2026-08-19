@@ -134,10 +134,10 @@
   // ---------------------------------------------------------------------
   var GUIDELINES = [
     "Set 2–6 KRAs for your goal, with weights summing to 100%.",
-    "Add up to 3 KPIs per KRA to make each one measurable.",
+    "KPIs are optional — add up to 3 per KRA if they'll help make it measurable.",
     "Save your draft any time — nothing is final until you submit it.",
     "Once submitted, your manager can approve it or send it back with comments for you to revise and resubmit.",
-    "Separately, check the Development tab to self-rate against your next promotion level's competencies — it's not scored as part of your goal, but it's tracked over time, so take it seriously.",
+    "Before you submit, you'll also need to self-rate your promotion-readiness competencies on the Development tab. It isn't scored as part of your goal, but it's tracked over time, so take it seriously.",
   ];
 
   function goGuidelines() {
@@ -311,10 +311,17 @@
       html += '<p class="alert alert-warn mt-4">This goal is read-only in its current state.</p>';
     }
     if (state.goalErrors.length > 0) {
+      var needsPromotionRatings = state.goalErrors.some(function (e) {
+        return e.indexOf("Development tab") !== -1;
+      });
       html +=
         '<div class="alert alert-error mt-4"><strong>Please fix the following:</strong><ul class="bullets">' +
         state.goalErrors.map(function (e) { return "<li>" + esc(e) + "</li>"; }).join("") +
-        "</ul></div>";
+        "</ul>" +
+        (needsPromotionRatings
+          ? '<span class="link small" onclick="goPromotion()">Go to the Development tab &rarr;</span>'
+          : "") +
+        "</div>";
     }
     if (state.goalMessage) {
       html += '<p class="alert alert-ok mt-4">' + esc(state.goalMessage) + "</p>";
@@ -505,31 +512,49 @@
     };
   }
 
+  // saveDraft/submitGoalClick disable both buttons for the duration of the
+  // round trip: without this, a second click before the first request
+  // returns (easy to do while waiting on a slow response) fires an
+  // overlapping saveGoalDraft call, which can leave duplicate KRA rows.
+  function setGoalButtonsBusy_(busy) {
+    ["save-btn", "submit-btn"].forEach(function (id) {
+      var btn = document.getElementById(id);
+      if (btn) btn.disabled = busy;
+    });
+  }
+
   function saveDraft() {
     state.goalMessage = null;
     state.goalErrors = [];
+    setGoalButtonsBusy_(true);
     var payload = goalPayload();
     runRpc("saveGoalDraft", state.user.id, state.goal.goal.id, payload.kras)
       .then(function (result) {
         if (!result.ok) {
           state.goalErrors = result.errors;
+          setGoalButtonsBusy_(false);
           renderGoal();
         } else {
           state.goalMessage = "Draft saved.";
           goGoal(true);
         }
       })
-      .catch(showFatal);
+      .catch(function (err) {
+        setGoalButtonsBusy_(false);
+        showFatal(err);
+      });
   }
 
   function submitGoalClick() {
     state.goalMessage = null;
     state.goalErrors = [];
+    setGoalButtonsBusy_(true);
     var payload = goalPayload();
     runRpc("saveGoalDraft", state.user.id, state.goal.goal.id, payload.kras)
       .then(function (saveResult) {
         if (!saveResult.ok) {
           state.goalErrors = saveResult.errors;
+          setGoalButtonsBusy_(false);
           renderGoal();
           return null;
         }
@@ -539,13 +564,17 @@
         if (!submitResult) return;
         if (!submitResult.ok) {
           state.goalErrors = submitResult.errors;
+          setGoalButtonsBusy_(false);
           renderGoal();
         } else {
           state.goalMessage = "Goal submitted for manager approval.";
           goGoal(true);
         }
       })
-      .catch(showFatal);
+      .catch(function (err) {
+        setGoalButtonsBusy_(false);
+        showFatal(err);
+      });
   }
 
   // ---------------------------------------------------------------------
@@ -605,16 +634,17 @@
         "). Rate yourself against your own level's competencies to keep tracking your growth.</p>";
     } else {
       html +=
-        '<p class="muted mt-1">You\'re currently ' +
+        '<p class="muted mt-1">You\'re currently at the ' +
         esc(p.currentLevelName) +
-        ". These are the competencies expected at the next level, <strong>" +
+        " level. These are the competencies expected at the next level, <strong>" +
         esc(p.targetLevelName) +
         "</strong>.</p>";
     }
     html +=
-      '<p class="small muted mt-2">This isn\'t scored as part of your goal — but it matters. Rate yourself ' +
-      "honestly on what you think you can achieve in each competency; this is what's tracked for your " +
-      "promotion readiness over time, so it's worth taking seriously.</p>";
+      '<p class="small muted mt-2">This isn\'t scored as part of your goal, but you must rate every ' +
+      "competency below before you can submit it. Rate yourself honestly on what you think you can achieve " +
+      "in each one — this is what's tracked for your promotion readiness over time, so it's worth taking " +
+      "seriously.</p>";
 
     html += '<div class="stack mt-6">';
     p.options.forEach(function (o) {

@@ -79,7 +79,7 @@ and add one row per person, in this exact column order:
 | Name | Full name. Also what **Manager** below is matched against for other employees. |
 | Brand | Free text (e.g. which brand/business unit they sit under). |
 | Designation | Must exactly match a name in the **Designations** tab, or leave blank. Purely informational — shown on the profile, no longer drives anything functional. |
-| Business Role | Their level on the promotion ladder — must exactly match a name in the **PromotionLevels** tab (e.g. `Associate`, `Manager`, `Senior Vice President`), or leave blank. Drives which competencies they see on the Development screen. Leave blank for Faculty (not on this ladder yet). |
+| Business Role | Their level on the promotion ladder — must exactly match a name in the **PromotionLevels** tab (e.g. `Associate`, `Manager`, `Senior Vice President`). Usually leave this **blank**: for Full-Time staff, Designation already *is* a ladder level name, so it resolves automatically with no manual entry. Only fill this in when Designation uses a different job title than the ladder (or leave both blank for Faculty, not on this ladder yet). |
 | Manager | Must exactly match another employee's **Name** in this same sheet, or leave blank. Add managers before the people who report to them. |
 | Role | `EMPLOYEE`, `MANAGER`, or `HR_ADMIN` — controls app permissions (who can see the approval queue, etc). Not shown on the employee's own profile, just used internally. |
 | Goal Cycle | Informational label for which round of goal-setting this is. |
@@ -133,6 +133,19 @@ KRAs are the whole goal now — but it's tracked as a standing development
 record (`PromotionRatings`), independent of any goal cycle, so it survives
 `clearGoalData_()` and re-seeding.
 
+**A goal can't be submitted until every competency on this screen has been
+rated at least once** (see `validatePromotionRatingsComplete_()` in
+`Repository.gs`) — but only when there's actually something to rate: an
+employee whose Business Role/Designation doesn't resolve to a ladder level
+(blank, a typo, or intentionally out of scope like Faculty) has no
+competencies to rate, so their submission isn't blocked by a screen they
+have nothing to fill in.
+
+**Business Role auto-resolves from Designation.** For Full-Time staff,
+Designation already *is* a ladder level name (e.g. `Senior Associate`), so
+it's picked up with zero manual data entry. Business Role only needs
+filling in by hand when Designation doesn't match the ladder wording.
+
 The ladder itself (`PromotionLevels`/`PromotionCompetencyMap` tabs) is
 hand-transcribed from a "Promotion Architecture" proposal deck — 11
 Full-Time levels (Associate → ... → Senior Vice President), each with 4-5
@@ -143,7 +156,8 @@ Designations/RoleCompetencyMap); `seedAll()` only upserts by name, so it
 won't overwrite your edits. **Faculty is intentionally out of scope for
 now** — it's a separate qualification-gated track in the source deck, not
 a competency ladder, so Faculty employees should just leave Business Role
-blank until that's designed.
+and Designation blank (or use a Designation that doesn't match a ladder
+name) until that's designed.
 
 ## Re-seeding
 
