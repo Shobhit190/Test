@@ -836,7 +836,7 @@
           "subLevelMax": 6,
           "levelName": "On The rise",
           "behaviourIndicators": [
-            "Values result more than efforts",
+            "Prioritizes outcomes and business impact over activity alone",
             "Moves quickly from planning to execution",
             "Sets clear goals and tracks progress of team effectively",
             "Resolves issues impacting outcomes in a timely manner",
@@ -922,7 +922,7 @@
             "Takes initiative and moves work forward independently",
             "Follows through on tasks end-to-end with his team",
             "Communicates proactively about risks and dependencies",
-            "Takes accountability for mistakes and fixes them"
+            "Takes accountability for mistakes and takes corrective action"
           ],
           "level": "C"
         },

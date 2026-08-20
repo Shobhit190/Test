@@ -27,15 +27,12 @@ function getDashboard(userId) {
   var teamGoals = [];
   if (user.systemRole === "MANAGER" || user.systemRole === "HR_ADMIN") {
     var users = readEmployeesResolved_();
-    var relevantUsers =
+    var relevantIds =
       user.systemRole === "HR_ADMIN"
-        ? users
-        : users.filter(function (u) {
-            return u.managerId === userId;
-          });
-    var relevantIds = relevantUsers.map(function (u) {
-      return u.id;
-    });
+        ? users.map(function (u) {
+            return u.id;
+          })
+        : getDownlineIds_(users, userId);
     var usersById = indexBy_(users, "id");
 
     var goals = readTable(TABLES.GOALS.name, TABLES.GOALS.headers).filter(function (g) {

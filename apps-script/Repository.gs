@@ -135,6 +135,28 @@ function groupBy_(rows, key) {
 }
 
 /**
+ * A manager's entire downline: direct reports, their reports, and so on,
+ * however many levels deep. Used for the dashboard's team rollup, which is
+ * meant to show a manager everyone beneath them -- not just people who
+ * report to them directly. This does NOT affect who can approve/return a
+ * goal (that's still the person's direct manager only -- see
+ * getApprovalQueue's managerId check).
+ */
+function getDownlineIds_(users, managerId) {
+  var byManager = groupBy_(users, "managerId");
+  var result = [];
+  var queue = (byManager[managerId] || []).slice();
+  while (queue.length > 0) {
+    var u = queue.shift();
+    result.push(u.id);
+    (byManager[u.id] || []).forEach(function (report) {
+      queue.push(report);
+    });
+  }
+  return result;
+}
+
+/**
  * The competencies an employee should self-rate for promotion readiness:
  * their *next* PromotionLevels rung's promotion-critical competencies (or
  * their own level's, if they're already at the top of the ladder). Returns

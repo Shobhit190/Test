@@ -81,20 +81,20 @@ and add one row per person, in this exact column order:
 |---|---|
 | Employee Code | Unique per person — this is their row's internal id, so it must not repeat or be blank. |
 | Name | Full name. Also what **Manager** below is matched against for other employees. |
-| Brand | Free text (e.g. which brand/business unit they sit under). |
+| Brand | Free text (e.g. which brand/business unit they sit under). Shown in the UI as **Entity**. |
 | Designation | Must exactly match a name in the **Designations** tab, or leave blank. Purely informational — shown on the profile, no longer drives anything functional. |
 | Business Role | Their level on the promotion ladder — must exactly match a name in the **PromotionLevels** tab (e.g. `Associate`, `Manager`, `Senior Vice President`). Usually leave this **blank**: for Full-Time staff, Designation already *is* a ladder level name, so it resolves automatically with no manual entry. Only fill this in when Designation uses a different job title than the ladder (or leave both blank for Faculty, not on this ladder yet). |
-| Manager | Must exactly match another employee's **Name** in this same sheet, or leave blank. Add managers before the people who report to them. |
+| Manager | Must exactly match another employee's **Name** in this same sheet, or leave blank. Add managers before the people who report to them. Shown in the UI as **Reporting Manager**. |
 | Role | `EMPLOYEE`, `MANAGER`, or `HR_ADMIN` — controls app permissions (who can see the approval queue, etc). Not shown on the employee's own profile, just used internally. |
 | Goal Cycle | Informational label for which round of goal-setting this is. |
-| Assessment Period | Informational label for which performance/promotion assessment period this is. |
+| Assessment Period | Informational label for which performance/promotion assessment period this is. No longer shown on the employee's My Details card, but still used in the Report tab. |
 | Email | Their login email. Must be unique. |
 | Password | Their login password — stored and compared as **plain text** (see note below), typically set to the same value as Employee Code. |
 
 Typos in Designation, Business Role, or Manager fail silently (that person
-just won't see the relevant Development-screen competencies, or their goal
-won't route to the right approver) — there's no validation on a hand-typed
-row.
+just won't see the relevant My Development-screen competencies, or their
+goal won't route to the right approver) — there's no validation on a
+hand-typed row.
 
 **Option B — run a script.** In the Apps Script editor, open `Admin.gs`,
 edit the values in `addEmployeeFromTemplate()` near the bottom (same
@@ -129,16 +129,21 @@ base64-encoded PNG.
 
 Right after signing in, employees see a one-time **guidelines** screen
 (edit the `GUIDELINES` array near the top of `Javascript.html` to change
-the text) before landing on the dashboard. The dashboard also shows a
-**My Details** card with their Employee Code, Brand, Designation, Manager,
-Goal Cycle, and Assessment Period. Business Role isn't shown here (it's
+the text) before landing on the **Employee Dashboard**. The dashboard also
+shows a **My Details** card with their Employee Code, Entity (the Brand
+column), Designation, and Reporting Manager. Goal Cycle and Assessment
+Period aren't shown here. Business Role isn't shown here either (it's
 usually just a duplicate of Designation now that it auto-resolves — see
-below) but still drives what they see on the Development tab; the internal
-permissions Role and their Email/Password aren't shown either.
+below) but still drives what they see on the My Development tab; the
+internal permissions Role and their Email/Password aren't shown either.
+For managers/HR, the dashboard's team rollup shows their **entire
+downline** (direct and indirect reports), though who can actually
+approve/return a goal is still limited to that person's direct manager —
+see `getApprovalQueue` in `Code.gs`.
 
-## Promotion readiness (the "Development" tab)
+## Role Readiness (the "My Development" tab)
 
-Separate from goal-setting, every employee has a **Development** screen
+Separate from goal-setting, every employee has a **My Development** screen
 (titled "Role Readiness") where they self-rate against the competencies
 expected at their *next* level on the Full-Time promotion ladder (their own
 level's competencies, if they're already at the top). This isn't scored as
@@ -146,10 +151,10 @@ part of the goal — KRAs are the whole goal now — but it's tracked as a
 standing development record (`PromotionRatings`), independent of any goal
 cycle, so it survives `clearGoalData_()` and re-seeding.
 
-The screen also shows an **ideal average rating badge** at the top (e.g.
-"Ideal average rating expected: 4–5/10"), pulled from the target level's
+The screen also shows an **Expected Average Rating badge** at the top (e.g.
+"Expected Average Rating: 4–5/10"), pulled from the target level's
 `maturityMin`/`maturityMax` in the PromotionLevels tab — generic, with no
-role name attached, so a Senior Associate sees Assistant Manager's ideal
+role name attached, so a Senior Associate sees Assistant Manager's expected
 average without it being spelled out.
 
 **A goal can't be submitted until every competency on this screen has been
@@ -160,14 +165,14 @@ employee whose Business Role/Designation doesn't resolve to a ladder level
 competencies to rate, so their submission isn't blocked by a screen they
 have nothing to fill in.
 
-**The guided flow:** the My Goal screen has a "Next: Rate competencies →"
-button that takes you straight to the Development tab once your KRAs are
-filled in. The Development tab itself then shows a "Submit for approval"
-button (as long as your goal was loaded this session and is still
-editable) — save your ratings and submit from the same screen, without
-switching back to My Goal. Submitting from either screen goes through the
-same `saveGoalDraft` + `submitGoal` calls, so there's no difference in what
-gets validated.
+**The guided flow:** the My Goals screen has a "Next: Rate competencies →"
+button that takes you straight to the My Development tab once your KRAs
+are filled in. The My Development tab itself then shows a "Submit for
+approval" button (as long as your goal was loaded this session and is
+still editable) — save your ratings and submit from the same screen,
+without switching back to My Goals. Submitting from either screen goes
+through the same `saveGoalDraft` + `submitGoal` calls, so there's no
+difference in what gets validated.
 
 **Business Role auto-resolves from Designation.** For Full-Time staff,
 Designation already *is* a ladder level name (e.g. `Senior Associate`), so
@@ -192,11 +197,11 @@ name) until that's designed.
 HR Admins get a **Report** nav link with a single "Generate / refresh
 report" button. Clicking it (or running `generateReport()` from the Apps
 Script editor) writes one row per employee to a **Report** tab: Employee
-Code, Name, Brand, Designation, Business Role, Manager, Goal Cycle,
-Assessment Period, Goal Status, KRA Count, Total KRA Weight, Current Level,
-Target Level, Competencies Required, Competencies Rated, Avg Self-Rating,
-and when ratings were last updated — everything in one place instead of
-opening each person's screen individually.
+Code, Name, Brand, Designation, Business Role, Reporting Manager, Goal
+Cycle, Assessment Period, Goal Status, KRA Count, Total KRA Weightage,
+Current Level, Target Level, Competencies Required, Competencies Rated,
+Avg Self-Rating, and when ratings were last updated — everything in one
+place instead of opening each person's screen individually.
 
 Unlike the hand-editable reference tabs, **Report is pure output**: every
 run fully clears and rewrites it, so don't hand-edit it — your changes

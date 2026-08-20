@@ -3,7 +3,7 @@
  */
 
 var MIN_KRAS = 2;
-var MAX_KRAS = 6;
+var MAX_KRAS = 5;
 var MAX_KPIS_PER_KRA = 3;
 var KRA_WEIGHT_TOTAL = 100;
 
