@@ -25,6 +25,10 @@ var TABLES = {
       "assessmentPeriod",
       "email",
       "password",
+      // Appended at the end (not inserted earlier in the order) so adding
+      // it to an already-seeded live sheet is just "add one new column
+      // after Password" -- every other column keeps its existing position.
+      "entity",
     ],
   },
   DESIGNATIONS: {

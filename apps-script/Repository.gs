@@ -43,6 +43,7 @@ function readEmployeesResolved_() {
       employeeCode: u.id,
       name: str_(u.name).trim(),
       brand: str_(u.brand).trim(),
+      entity: str_(u.entity).trim(),
       designationName: designationName,
       designationId: designationName ? designationIdByName[designationName.toLowerCase()] || null : null,
       businessRole: businessRole,

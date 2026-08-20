@@ -197,7 +197,8 @@
 
     html += '<div class="card mt-4"><h3>My Details</h3><div class="stack" style="gap:6px">';
     html += profileRow_("Employee Code", p.employeeCode);
-    html += profileRow_("Entity", p.brand);
+    html += profileRow_("Brand", p.brand);
+    html += profileRow_("Entity", p.entity);
     html += profileRow_("Designation", p.designationName);
     html += profileRow_("Reporting Manager", p.managerName);
     html += profileRow_("Goal Cycle", p.goalCycle);
@@ -219,28 +220,58 @@
     if (data.isManagerOrHr) {
       html += '<div class="mt-8"><div class="row">';
       html += "<h2>" + (data.isHrAdmin ? "Org-wide rollup" : "My team") + "</h2></div>";
-      html += '<div class="stack mt-3">';
+
       if (data.teamGoals.length === 0) {
-        html += '<p class="card muted" style="text-align:center;">No goals yet this cycle.</p>';
-      }
-      data.teamGoals.forEach(function (g) {
-        var clickable = g.status !== "DRAFT";
+        html += '<div class="stack mt-3"><p class="card muted" style="text-align:center;">No goals yet this cycle.</p></div>';
+      } else if (data.isHrAdmin) {
+        // Org-wide rollup has no single manager to be "direct" relative to,
+        // so it stays a flat list.
+        html += '<div class="stack mt-3">';
+        data.teamGoals.forEach(function (g) {
+          html += teamMemberCardHtml_(g);
+        });
+        html += "</div>";
+      } else {
+        var direct = data.teamGoals.filter(function (g) {
+          return g.isDirectReport;
+        });
+        var skipLevel = data.teamGoals.filter(function (g) {
+          return !g.isDirectReport;
+        });
+
+        html += '<h3 class="mt-5">Direct reports</h3>';
+        html += '<div class="stack mt-2">';
         html +=
-          '<div class="card row"' +
-          (clickable ? ' style="cursor:pointer" onclick="openApproval(\'' + g.id + '\')"' : ' style="opacity:0.7"') +
-          ">" +
-          '<div><p style="font-weight:500">' +
-          esc(g.employeeName) +
-          '</p><p class="small muted">' +
-          esc(g.designationName || "—") +
-          "</p></div>" +
-          statusBadge(g.status) +
-          "</div>";
-      });
-      html += "</div></div>";
+          direct.length === 0
+            ? '<p class="card muted" style="text-align:center;">No direct reports with a goal yet this cycle.</p>'
+            : direct.map(teamMemberCardHtml_).join("");
+        html += "</div>";
+
+        if (skipLevel.length > 0) {
+          html += '<h3 class="mt-6">Skip-level reports</h3>';
+          html += '<div class="stack mt-2">' + skipLevel.map(teamMemberCardHtml_).join("") + "</div>";
+        }
+      }
+      html += "</div>";
     }
 
     setContent(html);
+  }
+
+  function teamMemberCardHtml_(g) {
+    var clickable = g.status !== "DRAFT";
+    return (
+      '<div class="card row"' +
+      (clickable ? ' style="cursor:pointer" onclick="openApproval(\'' + g.id + '\')"' : ' style="opacity:0.7"') +
+      ">" +
+      '<div><p style="font-weight:500">' +
+      esc(g.employeeName) +
+      '</p><p class="small muted">' +
+      esc(g.designationName || "—") +
+      "</p></div>" +
+      statusBadge(g.status) +
+      "</div>"
+    );
   }
 
   // ---------------------------------------------------------------------
@@ -290,11 +321,33 @@
     return levels[0];
   }
 
+  // The competency meter's fill is a CSS custom property rather than a
+  // structural width, so the same gradient track just re-paints in place on
+  // drag instead of needing a separate overlay element kept in sync.
+  function meterFillPercent_(subLevel) {
+    var pct = ((Number(subLevel) - 1) / 9) * 100;
+    return Math.max(0, Math.min(100, pct));
+  }
+
+  // Renders the five lettered rungs (A-E) under the meter, highlighting
+  // whichever band the current rating falls in -- the ladder motif that
+  // replaces the old plain "E · 9/10" text badge.
+  function meterTicksHtml_(levels, subLevel) {
+    return levels
+      .map(function (l) {
+        var active = subLevel >= l.subLevelMin && subLevel <= l.subLevelMax;
+        return "<span" + (active ? ' class="active"' : "") + ">" + esc(l.level) + "</span>";
+      })
+      .join("");
+  }
+
   function renderGoal() {
     var editable = state.goal.editable;
     var html = navHtml();
     html +=
-      '<div class="row"><h1>My Goals</h1><span class="badge" style="background:#f3f4f6;color:#374151">' +
+      '<div class="row"><h1>My Goals</h1><span class="badge badge-' +
+      state.goal.goal.status +
+      '">' +
       esc(STATUS_LABELS[state.goal.goal.status]) +
       "</span></div>";
 
@@ -447,7 +500,7 @@
     html += "</div>"; // KRA section
 
     if (editable) {
-      html += '<div class="gap-2 mt-8" style="border-top:1px solid #e5e7eb;padding-top:20px">';
+      html += '<div class="gap-2 mt-8 actions-divider">';
       html += '<button class="btn-secondary" onclick="saveDraft()" id="save-btn">Save draft</button>';
       html += '<button class="btn-primary" onclick="goPromotion()">Next: Rate competencies &rarr;</button>';
       html += "</div>";
@@ -643,31 +696,43 @@
       var comp = o.competency;
       var rating = promotionRatingByCompetency_(comp.id);
       var level = levelForSubLevel(comp.levels, rating.subLevel);
-      html += '<div class="card">';
-      html += '<div class="row-start"><div>';
-      html += '<p style="font-weight:500">' + esc(comp.name) + "</p>";
-      html += '<p class="small muted">' + esc(comp.cluster) + " &middot; " + esc(comp.subCluster) + "</p>";
-      html += "</div></div>";
+      html += '<div class="card comp-card">';
 
-      html += '<div class="gap-3 mt-3">';
+      html += '<div class="comp-head"><div>';
+      html += '<p class="comp-name">' + esc(comp.name) + "</p>";
+      html += '<p class="small muted mt-1">' + esc(comp.cluster) + " &middot; " + esc(comp.subCluster) + "</p>";
+      html += "</div>";
+      html +=
+        '<div class="comp-score" id="promo-level-badge-' +
+        comp.id +
+        '"><span class="num">' +
+        rating.subLevel +
+        '</span><span class="den">/10</span></div>';
+      html += "</div>"; // comp-head
+
+      html += '<div class="meter">';
       html +=
         '<input type="range" min="1" max="10" value="' +
         rating.subLevel +
-        '" ' +
+        '" id="promo-slider-' +
+        comp.id +
+        '" style="--fill:' +
+        meterFillPercent_(rating.subLevel) +
+        '%" ' +
         (p.editable ? "" : "disabled ") +
         'oninput="updatePromotionRating(\'' +
         comp.id +
         '\',\'subLevel\',this.value)" />';
       html +=
-        '<span class="badge" style="background:#f3f4f6;color:#111827;white-space:nowrap" id="promo-level-badge-' +
+        '<div class="meter-ticks" id="promo-ticks-' +
         comp.id +
         '">' +
-        (level ? level.level : "") +
-        " &middot; " +
-        rating.subLevel +
-        "/10</span></div>";
+        meterTicksHtml_(comp.levels, rating.subLevel) +
+        "</div>";
+      html += "</div>"; // meter
+
       html +=
-        '<p class="small mt-1" style="font-weight:600" id="promo-level-name-' +
+        '<p class="comp-level-name" id="promo-level-name-' +
         comp.id +
         '">' +
         (level ? esc(level.levelName) : "") +
@@ -690,13 +755,12 @@
         '\',\'selfComment\',this.value)">' +
         esc(rating.selfComment) +
         "</textarea>";
-      html += "</div>";
-      html += "</div>";
+      html += "</div>"; // comp-card
     });
     html += "</div>";
 
     if (p.editable) {
-      html += '<div class="gap-2 mt-8" style="border-top:1px solid #e5e7eb;padding-top:20px">';
+      html += '<div class="gap-2 mt-8 actions-divider">';
       html += '<button class="btn-primary" onclick="savePromotionRatingsClick()" id="save-promotion-btn">Save ratings</button>';
       if (state.goal && state.goal.editable) {
         html += '<button class="btn-primary" onclick="submitFromPromotionClick()" id="submit-promotion-btn">Submit for approval</button>';
@@ -738,8 +802,16 @@
     if (!rating || !comp) return;
     var level = levelForSubLevel(comp.levels, rating.subLevel);
 
-    var badge = document.getElementById("promo-level-badge-" + competencyId);
-    if (badge) badge.textContent = (level ? level.level : "") + " · " + rating.subLevel + "/10";
+    var scoreEl = document.getElementById("promo-level-badge-" + competencyId);
+    if (scoreEl) {
+      scoreEl.innerHTML = '<span class="num">' + rating.subLevel + '</span><span class="den">/10</span>';
+    }
+
+    var slider = document.getElementById("promo-slider-" + competencyId);
+    if (slider) slider.style.setProperty("--fill", meterFillPercent_(rating.subLevel) + "%");
+
+    var ticksEl = document.getElementById("promo-ticks-" + competencyId);
+    if (ticksEl) ticksEl.innerHTML = meterTicksHtml_(comp.levels, rating.subLevel);
 
     var nameEl = document.getElementById("promo-level-name-" + competencyId);
     if (nameEl) nameEl.textContent = level ? level.levelName : "";
@@ -935,19 +1007,15 @@
       goal.promotionReadiness.ratings.forEach(function (r) {
         var comp = r.competency;
         var level = r.subLevel !== null ? levelForSubLevel(comp.levels, r.subLevel) : null;
-        html += '<div class="card"><div class="row"><p style="font-weight:500">' + esc(comp.name) + "</p>";
+        html += '<div class="card"><div class="row"><p class="comp-name">' + esc(comp.name) + "</p>";
         html +=
           r.subLevel !== null
-            ? '<span class="badge" style="background:#f3f4f6;color:#111827;white-space:nowrap">' +
-              (level ? level.level : "") +
-              " &middot; " +
-              r.subLevel +
-              "/10</span>"
+            ? '<span class="badge badge-neutral">' + (level ? level.level : "") + " &middot; " + r.subLevel + "/10</span>"
             : '<span class="small muted">Not yet rated</span>';
         html += "</div>";
         html += '<p class="small muted mt-1">' + esc(comp.cluster) + " &middot; " + esc(comp.subCluster) + "</p>";
         if (level) {
-          html += '<p class="small mt-2" style="font-weight:600">' + esc(level.levelName) + "</p>";
+          html += '<p class="comp-level-name mt-2">' + esc(level.levelName) + "</p>";
           html +=
             '<ul class="bullets small muted mt-1">' +
             level.behaviourIndicators.map(function (b) { return "<li>" + esc(b) + "</li>"; }).join("") +
@@ -965,7 +1033,7 @@
     html += '<div class="mt-8"><h2>History</h2><div class="stack mt-3">';
     goal.approvalHistory.forEach(function (h) {
       html +=
-        '<div class="card small muted" style="background:#f9fafb"><strong style="color:#111827">' +
+        '<div class="card small muted history-item"><strong>' +
         h.action +
         "</strong> by " +
         esc(h.actorName) +

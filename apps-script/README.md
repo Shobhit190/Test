@@ -81,7 +81,7 @@ and add one row per person, in this exact column order:
 |---|---|
 | Employee Code | Unique per person — this is their row's internal id, so it must not repeat or be blank. |
 | Name | Full name. Also what **Manager** below is matched against for other employees. |
-| Brand | Free text (e.g. which brand/business unit they sit under). Shown in the UI as **Entity**. |
+| Brand | Free text (e.g. which brand/business unit they sit under). Shown on the My Details card as its own **Brand** row. |
 | Designation | Must exactly match a name in the **Designations** tab, or leave blank. Purely informational — shown on the profile, no longer drives anything functional. |
 | Business Role | Their level on the promotion ladder — must exactly match a name in the **PromotionLevels** tab (e.g. `Associate`, `Manager`, `Senior Vice President`). Usually leave this **blank**: for Full-Time staff, Designation already *is* a ladder level name, so it resolves automatically with no manual entry. Only fill this in when Designation uses a different job title than the ladder (or leave both blank for Faculty, not on this ladder yet). |
 | Manager | Must exactly match another employee's **Name** in this same sheet, or leave blank. Add managers before the people who report to them. Shown in the UI as **Reporting Manager**. |
@@ -90,6 +90,7 @@ and add one row per person, in this exact column order:
 | Assessment Period | Informational label for which performance/promotion assessment period this is. No longer shown on the employee's My Details card, but still used in the Report tab. |
 | Email | Their login email. Must be unique. |
 | Password | Their login password — stored and compared as **plain text** (see note below), typically set to the same value as Employee Code. |
+| Entity | Free text, separate from Brand. Shown on the My Details card as its own **Entity** row, right below Brand. This column is appended after Password (not inserted earlier in the order) specifically so adding it to an already-seeded sheet is just "add one new column at the end" — every other column keeps its existing position. |
 
 Typos in Designation, Business Role, or Manager fail silently (that person
 just won't see the relevant My Development-screen competencies, or their
@@ -125,21 +126,86 @@ on the login screen and in the top nav bar on every authenticated screen.
 To swap it for a new logo, replace that constant's value with a new
 base64-encoded PNG.
 
+## Design system
+
+`Stylesheet.html` defines the whole visual language as CSS custom
+properties at the top of the file (`:root { --plum-800: ...; --gold-500:
+...; }` etc.) — change a color, spacing value, or radius there and it
+applies everywhere, rather than hunting through individual rules.
+
+- **Colors** are sampled directly from the Elevate Education logo: a deep
+  plum (`--plum-800`, `#450a3f`) as the primary color for headings, links,
+  and primary buttons, and a warm gold (`--gold-500`, `#b3873f`) used
+  sparingly as an accent (the login card's top border, the competency
+  meter's gradient). Everything else — body text, borders, card
+  backgrounds — is a warm-tinted neutral scale, not the generic cool gray
+  most admin tools default to, so plum and gold don't have to fight the
+  chrome for attention. Status badges (Draft/Submitted/Revision
+  Required/Approved) use a separate semantic palette (gray/blue/amber/
+  green) deliberately kept outside the plum/gold family, so a status is
+  never mistaken for a brand accent.
+- **Type scale**: headings (`h1`/`h2`) use a serif, **Source Serif 4**,
+  loaded from Google Fonts via a `<link>` in `Index.html`'s `<head>` (with
+  a `Georgia`/`Times New Roman` fallback stack for offline/blocked
+  networks); body text, labels, buttons, and data use **Inter**. This is
+  the app's one deliberate stylistic choice — a warm editorial serif
+  paired with a clean sans reads as considered and calm rather than
+  generic SaaS, which is the tone an internal HR tool used daily should
+  have. `h3` is a small uppercase Inter label (`text-transform:
+  uppercase`) used for sub-headers like "My Details" or "Manager
+  decision" — worth knowing if you ever grep test/screenshot text for
+  exact casing, since rendered text comes back uppercase even though the
+  HTML has normal casing.
+- **The competency meter** (Development tab) is the other deliberate
+  choice: since the app's whole premise is a career *ladder* (five
+  lettered bands, A through E), the rating control is styled to look like
+  one instead of a bare `<input type="range">` — a plum-to-gold gradient
+  fill with the five rungs marked underneath (`.meter`/`.meter-ticks` in
+  Stylesheet.html), and the current score shown as a large serif number
+  next to the competency name rather than a small floating badge. It's
+  still a real native range input under the hood (see
+  `meterFillPercent_`/`meterTicksHtml_`/`updatePromotionRatingLevelUI` in
+  `Javascript.html`) — just a CSS custom property (`--fill`) driving the
+  gradient — so keyboard control (arrow keys), screen-reader value
+  announcements, and touch dragging all keep working exactly as they do
+  on any other range input.
+- **Accessibility**: every interactive element gets a visible plum focus
+  ring on keyboard focus (`:focus-visible`, not `:focus`, so it doesn't
+  show on mouse clicks) instead of relying on the browser default; color
+  is never the only signal (status badges and buttons all carry text, not
+  just color); `prefers-reduced-motion` disables the small hover/transition
+  animations.
+- **Responsive**: a single breakpoint at 640px stacks the nav links,
+  shrinks the heading scale, and turns each row-style card (My Details,
+  team member rows) into a stacked layout so it's usable on a phone
+  without a separate mobile build.
+
 ## What employees see after logging in
 
 Right after signing in, employees see a one-time **guidelines** screen
 (edit the `GUIDELINES` array near the top of `Javascript.html` to change
 the text) before landing on the **Employee Dashboard**. The dashboard also
-shows a **My Details** card with their Employee Code, Entity (the Brand
-column), Designation, and Reporting Manager. Goal Cycle and Assessment
-Period aren't shown here. Business Role isn't shown here either (it's
-usually just a duplicate of Designation now that it auto-resolves — see
-below) but still drives what they see on the My Development tab; the
-internal permissions Role and their Email/Password aren't shown either.
-For managers/HR, the dashboard's team rollup shows their **entire
-downline** (direct and indirect reports), though who can actually
-approve/return a goal is still limited to that person's direct manager —
-see `getApprovalQueue` in `Code.gs`.
+shows a **My Details** card with their Employee Code, Brand, Entity,
+Designation, Reporting Manager, and Goal Cycle. Assessment Period isn't
+shown here (still used in the Report tab). Business Role isn't shown here
+either (it's usually just a duplicate of Designation now that it
+auto-resolves — see below) but still drives what they see on the My
+Development tab; the internal permissions Role and their Email/Password
+aren't shown either.
+
+For managers, the dashboard's **My team** section shows their **entire
+downline** (direct and indirect reports), split into two labeled groups —
+**Direct reports** and **Skip-level reports** — so it's clear at a glance
+who reports to them directly versus further down the chain (the
+Skip-level group only appears when there is one). This is purely a
+visibility grouping, computed client-side in `renderDashboard()` /
+`teamMemberCardHtml_()` from the `isDirectReport` flag `getDashboard`
+attaches to each team member (`emp.managerId === userId`); who can
+actually approve/return a goal is still limited to that person's direct
+manager — see `getApprovalQueue` in `Code.gs`, which is unchanged. HR's
+**Org-wide rollup** stays a flat list, since the direct/skip-level
+distinction doesn't apply to HR (they're not anyone's actual reporting
+manager in the data).
 
 ## Role Readiness (the "My Development" tab)
 
@@ -215,8 +281,8 @@ name) until that's designed.
 HR Admins get a **Report** nav link with a single "Generate / refresh
 report" button. Clicking it (or running `generateReport()` from the Apps
 Script editor) writes one row per employee to a **Report** tab: Employee
-Code, Name, Brand, Designation, Business Role, Reporting Manager, Goal
-Cycle, Assessment Period, Goal Status, KRA Count, Total KRA Weightage,
+Code, Name, Brand, Entity, Designation, Business Role, Reporting Manager,
+Goal Cycle, Assessment Period, Goal Status, KRA Count, Total KRA Weightage,
 Current Level, Target Level, Competencies Required, Competencies Rated,
 Avg Self-Rating, and when ratings were last updated — everything in one
 place instead of opening each person's screen individually.

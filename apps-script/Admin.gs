@@ -27,6 +27,8 @@
  * - managerName: must exactly match an existing employee's Name in the
  *   Employee Details sheet (add managers before the people who report to
  *   them), or "" for none
+ * - entity: free text, separate from brand -- optional, defaults to "" if
+ *   omitted
  */
 function addEmployee_(
   employeeCode,
@@ -39,7 +41,8 @@ function addEmployee_(
   businessRole,
   goalCycle,
   assessmentPeriod,
-  managerName
+  managerName,
+  entity
 ) {
   employeeCode = str_(employeeCode).trim();
   email = str_(email).trim().toLowerCase();
@@ -52,6 +55,7 @@ function addEmployee_(
   goalCycle = str_(goalCycle).trim();
   assessmentPeriod = str_(assessmentPeriod).trim();
   managerName = str_(managerName).trim();
+  entity = str_(entity).trim();
 
   if (!employeeCode || !email || !name || !password) {
     throw new Error("employeeCode, email, name, and password are all required.");
@@ -107,6 +111,7 @@ function addEmployee_(
     assessmentPeriod: assessmentPeriod,
     email: email,
     password: password,
+    entity: entity,
   };
 
   if (existingByCode) {
@@ -137,6 +142,7 @@ function addEmployeeFromTemplate() {
     "Associate", // business role / promotion-ladder level, must match the PromotionLevels tab exactly, or ""
     "FY2025-26", // goal cycle
     "FY2025-26", // assessment period
-    "Jane Manager" // their manager's Name, must match an existing employee exactly, or ""
+    "Jane Manager", // their manager's Name, must match an existing employee exactly, or ""
+    "Elevate" // entity, free text, separate from brand -- or ""
   );
 }

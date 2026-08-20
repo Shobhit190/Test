@@ -46,6 +46,7 @@ function getDashboard(userId) {
           status: g.status,
           employeeName: emp ? emp.name : "Unknown",
           designationName: emp ? emp.designationName : null,
+          isDirectReport: !!emp && emp.managerId === userId,
         };
       })
       .sort(function (a, b) {
@@ -63,6 +64,7 @@ function getDashboard(userId) {
       employeeCode: user.id,
       name: user.name,
       brand: user.brand,
+      entity: user.entity,
       designationName: user.designationName,
       managerName: user.managerName,
       goalCycle: user.goalCycle,
