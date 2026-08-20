@@ -182,6 +182,7 @@ function submitGoal(userId, goalId) {
 function getPromotionScreen(userId) {
   resetTableCache_();
   requireUser_(userId);
+  var goal = getOrCreateGoal_(userId);
   var info = getPromotionCompetenciesForUser_(userId);
   var existing = readTable(TABLES.PROMOTION_RATINGS.name, TABLES.PROMOTION_RATINGS.headers).filter(function (r) {
     return r.employeeId === userId;
@@ -196,13 +197,25 @@ function getPromotionScreen(userId) {
     ratings: existing.map(function (r) {
       return { competencyId: r.competencyId, subLevel: Number(r.subLevel), selfComment: r.selfComment };
     }),
+    editable: goal.status === "DRAFT" || goal.status === "RETURNED",
+    goalStatus: goal.status,
   };
 }
 
-/** RPC: replace the employee's promotion-readiness self-ratings wholesale. */
+/**
+ * RPC: replace the employee's promotion-readiness self-ratings wholesale.
+ * Gated the same way saveGoalDraft is: ratings are part of the same
+ * submit/approve/return package as the KRAs now, so once the employee's
+ * current-cycle goal is SUBMITTED or APPROVED, ratings lock along with it
+ * until a manager returns it (or a new cycle starts a fresh, editable goal).
+ */
 function savePromotionRatings(userId, ratings) {
   resetTableCache_();
   requireUser_(userId);
+  var goal = getOrCreateGoal_(userId);
+  if (goal.status !== "DRAFT" && goal.status !== "RETURNED") {
+    return { ok: false, errors: ["This goal is not editable in its current state."] };
+  }
   deleteRowsWhere(TABLES.PROMOTION_RATINGS.name, TABLES.PROMOTION_RATINGS.headers, function (r) {
     return r.employeeId === userId;
   });
@@ -216,7 +229,7 @@ function savePromotionRatings(userId, ratings) {
       updatedAt: now,
     });
   });
-  return { ok: true };
+  return { ok: true, errors: [] };
 }
 
 /** RPC: HR-only -- regenerates the "Report" tab in the Sheet. */
@@ -279,7 +292,14 @@ function getApprovalQueue(userId) {
   return { pending: pending, decided: decided, isHrAdmin: isHrAdmin };
 }
 
-/** RPC: full detail view of a single goal, for a manager/HR reviewer. */
+/**
+ * RPC: full detail view of a single goal, for a manager/HR reviewer.
+ * Includes the employee's Role Readiness competency ratings alongside the
+ * KRAs -- both are reviewed and decided on together from this one screen.
+ * Only reachable for goals a manager/HR can already see via the approval
+ * queue (SUBMITTED or later), so an employee's still-drafting ratings are
+ * never exposed here.
+ */
 function getApprovalDetail(userId, goalId) {
   resetTableCache_();
   var user = requireUser_(userId);
@@ -290,6 +310,7 @@ function getApprovalDetail(userId, goalId) {
   if (!isDirectManager && !isHrAdmin) {
     throw new Error("You don't have access to this goal.");
   }
+  goal.promotionReadiness = getPromotionReadinessSnapshot_(goal.employeeId);
   return goal;
 }
 

@@ -14,6 +14,7 @@
     promotion: null, // { currentLevelName, targetLevelName, isTopLevel, options, ratings }
     promotionRatings: [],
     promotionMessage: null,
+    promotionError: null,
     approvals: null, // { pending, decided, isHrAdmin }
     approvalDetail: null,
     approvalReturning: false,
@@ -203,7 +204,7 @@
     html += "</div></div>";
 
     html += '<div class="card mt-6"><div class="row">';
-    html += "<div><p><strong>My Goal</strong></p>";
+    html += "<div><p><strong>My Goals</strong></p>";
     html +=
       '<p class="small muted mt-1">' +
       myGoal.kras.length +
@@ -448,8 +449,7 @@
     if (editable) {
       html += '<div class="gap-2 mt-8" style="border-top:1px solid #e5e7eb;padding-top:20px">';
       html += '<button class="btn-secondary" onclick="saveDraft()" id="save-btn">Save draft</button>';
-      html += '<button class="btn-primary" onclick="submitGoalClick()" id="submit-btn">Submit for approval</button>';
-      html += '<button class="btn-secondary" onclick="goPromotion()">Next: Rate competencies &rarr;</button>';
+      html += '<button class="btn-primary" onclick="goPromotion()">Next: Rate competencies &rarr;</button>';
       html += "</div>";
     }
 
@@ -553,44 +553,13 @@
       });
   }
 
-  function submitGoalClick() {
-    state.goalMessage = null;
-    state.goalErrors = [];
-    setGoalButtonsBusy_(true);
-    var payload = goalPayload();
-    runRpc("saveGoalDraft", state.user.id, state.goal.goal.id, payload.kras)
-      .then(function (saveResult) {
-        if (!saveResult.ok) {
-          state.goalErrors = saveResult.errors;
-          setGoalButtonsBusy_(false);
-          renderGoal();
-          return null;
-        }
-        return runRpc("submitGoal", state.user.id, state.goal.goal.id);
-      })
-      .then(function (submitResult) {
-        if (!submitResult) return;
-        if (!submitResult.ok) {
-          state.goalErrors = submitResult.errors;
-          setGoalButtonsBusy_(false);
-          renderGoal();
-        } else {
-          state.goalMessage = "Goal submitted for manager approval.";
-          goGoal(true);
-        }
-      })
-      .catch(function (err) {
-        setGoalButtonsBusy_(false);
-        showFatal(err);
-      });
-  }
-
   // ---------------------------------------------------------------------
   // Development / promotion-readiness self-assessment
   // ---------------------------------------------------------------------
   function goPromotion(preserveMessage) {
     state.view = "promotion";
     if (!preserveMessage) state.promotionMessage = null;
+    state.promotionError = null;
     setContent('<div class="center-screen"><p class="spinner-inline">Loading…</p></div>');
     runRpc("getPromotionScreen", state.user.id)
       .then(function (data) {
@@ -639,6 +608,9 @@
     if (state.promotionMessage) {
       html += '<p class="alert alert-ok mt-4">' + esc(state.promotionMessage) + "</p>";
     }
+    if (state.promotionError) {
+      html += '<p class="alert alert-error mt-4">' + esc(state.promotionError) + "</p>";
+    }
 
     if (!p.currentLevelName) {
       html +=
@@ -646,6 +618,13 @@
         "show here. Ask HR to add it to your profile.</p>";
       setContent(html);
       return;
+    }
+
+    if (!p.editable) {
+      html +=
+        '<p class="alert alert-warn mt-4">Your ratings are locked while your goal is ' +
+        esc(STATUS_LABELS[p.goalStatus] || p.goalStatus) +
+        ".</p>";
     }
 
     if (p.isTopLevel) {
@@ -674,7 +653,9 @@
       html +=
         '<input type="range" min="1" max="10" value="' +
         rating.subLevel +
-        '" oninput="updatePromotionRating(\'' +
+        '" ' +
+        (p.editable ? "" : "disabled ") +
+        'oninput="updatePromotionRating(\'' +
         comp.id +
         '\',\'subLevel\',this.value)" />';
       html +=
@@ -703,6 +684,7 @@
 
       html +=
         '<textarea rows="2" class="mt-3" placeholder="Self-Assessment Comments (optional)" ' +
+        (p.editable ? "" : "disabled ") +
         'oninput="updatePromotionRating(\'' +
         comp.id +
         '\',\'selfComment\',this.value)">' +
@@ -713,22 +695,24 @@
     });
     html += "</div>";
 
-    html += '<div class="gap-2 mt-8" style="border-top:1px solid #e5e7eb;padding-top:20px">';
-    html += '<button class="btn-primary" onclick="savePromotionRatingsClick()" id="save-promotion-btn">Save ratings</button>';
-    if (state.goal && state.goal.editable) {
-      html += '<button class="btn-primary" onclick="submitFromPromotionClick()" id="submit-promotion-btn">Submit for approval</button>';
-    }
-    html += "</div>";
+    if (p.editable) {
+      html += '<div class="gap-2 mt-8" style="border-top:1px solid #e5e7eb;padding-top:20px">';
+      html += '<button class="btn-primary" onclick="savePromotionRatingsClick()" id="save-promotion-btn">Save ratings</button>';
+      if (state.goal && state.goal.editable) {
+        html += '<button class="btn-primary" onclick="submitFromPromotionClick()" id="submit-promotion-btn">Submit for approval</button>';
+      }
+      html += "</div>";
 
-    if (!state.goal) {
-      html +=
-        '<p class="small muted mt-3">Set your KRAs on the <span class="link" onclick="goGoal()">My Goal</span> ' +
-        "tab first, then come back here to submit.</p>";
-    } else if (!state.goal.editable) {
-      html +=
-        '<p class="small muted mt-3">Your goal (' +
-        esc(STATUS_LABELS[state.goal.goal.status]) +
-        ") isn't editable right now, so there's nothing to submit.</p>";
+      if (!state.goal) {
+        html +=
+          '<p class="small muted mt-3">Set your KRAs on the <span class="link" onclick="goGoal()">My Goals</span> ' +
+          "tab first, then come back here to submit.</p>";
+      } else if (!state.goal.editable) {
+        html +=
+          '<p class="small muted mt-3">Your goal (' +
+          esc(STATUS_LABELS[state.goal.goal.status]) +
+          ") isn't editable right now, so there's nothing to submit.</p>";
+      }
     }
 
     setContent(html);
@@ -780,7 +764,13 @@
   function savePromotionRatingsClick() {
     setPromotionButtonsBusy_(true);
     runRpc("savePromotionRatings", state.user.id, state.promotionRatings)
-      .then(function () {
+      .then(function (result) {
+        if (!result.ok) {
+          state.promotionError = result.errors.join(" ");
+          setPromotionButtonsBusy_(false);
+          renderPromotion();
+          return;
+        }
         state.promotionMessage = "Ratings saved.";
         goPromotion(true);
       })
@@ -791,17 +781,24 @@
   }
 
   // The Development tab's "Submit for approval": saves the ratings shown
-  // here, then submits the goal already loaded from the My Goal tab this
+  // here, then submits the goal already loaded from the My Goals tab this
   // session (state.goal/state.kras). Only shown when that goal is loaded
   // and editable -- see renderPromotion().
   function submitFromPromotionClick() {
     setPromotionButtonsBusy_(true);
     var payload = goalPayload();
     runRpc("savePromotionRatings", state.user.id, state.promotionRatings)
-      .then(function () {
+      .then(function (ratingsResult) {
+        if (!ratingsResult.ok) {
+          state.promotionError = ratingsResult.errors.join(" ");
+          setPromotionButtonsBusy_(false);
+          renderPromotion();
+          return null;
+        }
         return runRpc("saveGoalDraft", state.user.id, state.goal.goal.id, payload.kras);
       })
       .then(function (saveResult) {
+        if (!saveResult) return null;
         if (!saveResult.ok) {
           setPromotionButtonsBusy_(false);
           goGoal(false, saveResult.errors);
@@ -921,6 +918,49 @@
       html += "</div>";
     });
     html += "</div></div>";
+
+    html += '<div class="mt-8"><div class="row"><h2>Role Readiness</h2>';
+    var approvalIdealLabel = idealRatingLabel_(
+      goal.promotionReadiness.targetMaturityMin,
+      goal.promotionReadiness.targetMaturityMax
+    );
+    if (approvalIdealLabel) {
+      html += '<span class="small muted">Expected Average Rating: ' + esc(approvalIdealLabel) + "/10</span>";
+    }
+    html += "</div>";
+    if (goal.promotionReadiness.ratings.length === 0) {
+      html += '<p class="small muted mt-2">No competencies to rate for this Business Role.</p>';
+    } else {
+      html += '<div class="stack mt-3">';
+      goal.promotionReadiness.ratings.forEach(function (r) {
+        var comp = r.competency;
+        var level = r.subLevel !== null ? levelForSubLevel(comp.levels, r.subLevel) : null;
+        html += '<div class="card"><div class="row"><p style="font-weight:500">' + esc(comp.name) + "</p>";
+        html +=
+          r.subLevel !== null
+            ? '<span class="badge" style="background:#f3f4f6;color:#111827;white-space:nowrap">' +
+              (level ? level.level : "") +
+              " &middot; " +
+              r.subLevel +
+              "/10</span>"
+            : '<span class="small muted">Not yet rated</span>';
+        html += "</div>";
+        html += '<p class="small muted mt-1">' + esc(comp.cluster) + " &middot; " + esc(comp.subCluster) + "</p>";
+        if (level) {
+          html += '<p class="small mt-2" style="font-weight:600">' + esc(level.levelName) + "</p>";
+          html +=
+            '<ul class="bullets small muted mt-1">' +
+            level.behaviourIndicators.map(function (b) { return "<li>" + esc(b) + "</li>"; }).join("") +
+            "</ul>";
+        }
+        if (r.selfComment) {
+          html += '<p class="small mt-2"><strong>Self-Assessment Comments:</strong> ' + esc(r.selfComment) + "</p>";
+        }
+        html += "</div>";
+      });
+      html += "</div>";
+    }
+    html += "</div>";
 
     html += '<div class="mt-8"><h2>History</h2><div class="stack mt-3">';
     goal.approvalHistory.forEach(function (h) {

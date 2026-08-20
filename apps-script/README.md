@@ -165,14 +165,32 @@ employee whose Business Role/Designation doesn't resolve to a ladder level
 competencies to rate, so their submission isn't blocked by a screen they
 have nothing to fill in.
 
-**The guided flow:** the My Goals screen has a "Next: Rate competencies →"
-button that takes you straight to the My Development tab once your KRAs
-are filled in. The My Development tab itself then shows a "Submit for
-approval" button (as long as your goal was loaded this session and is
-still editable) — save your ratings and submit from the same screen,
-without switching back to My Goals. Submitting from either screen goes
-through the same `saveGoalDraft` + `submitGoal` calls, so there's no
-difference in what gets validated.
+**The guided flow — one submit, for both:** the My Goals screen only has a
+"Next: Rate competencies →" button, no Submit button of its own. Once your
+KRAs are filled in, Next takes you to the My Development tab, which has the
+*only* "Submit for approval" button — it saves and submits the KRAs and the
+competency ratings together as one package (as long as your goal was loaded
+this session and is still editable).
+
+**Ratings lock with the goal.** Once submitted, both the KRAs and the
+competency ratings become read-only (sliders disabled, no Save/Submit
+buttons) until a manager decides. A manager's **Approve** locks them for
+the rest of the cycle; a **Return** unlocks both again for editing and
+resubmission — `savePromotionRatings` is gated on the same goal-status
+check as `saveGoalDraft` (`getOrCreateGoal_` → `DRAFT`/`RETURNED`), so
+there's no separate lock state to keep in sync.
+
+**Managers review both together.** The existing Approval Detail screen
+(Approvals → click an employee) now has a **Role Readiness** section right
+below the KRAs, showing the same competency cards the employee sees
+(rating, level name, behaviour indicators, self-assessment comments) —
+read-only, no separate screen. It's populated by
+`getPromotionReadinessSnapshot_()` in `Repository.gs`, added to the
+`getApprovalDetail` payload. Since that RPC is only ever reached for a
+goal that's already Submitted or later (via the approval queue), a
+manager never sees an employee's still-drafting ratings. Approve/Return
+still uses the one existing comment field — there's no separate
+competency-specific comment.
 
 **Business Role auto-resolves from Designation.** For Full-Time staff,
 Designation already *is* a ladder level name (e.g. `Senior Associate`), so

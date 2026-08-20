@@ -245,6 +245,39 @@ function validatePromotionRatingsComplete_(userId) {
   ];
 }
 
+/**
+ * A read-only snapshot of an employee's Role Readiness self-ratings, shaped
+ * for display (competency + level info alongside each rating) rather than
+ * for editing. Used by getApprovalDetail so a manager reviewing a goal sees
+ * the same competencies/ratings the employee sees on their own Development
+ * screen, without exposing the editable RPC shape.
+ */
+function getPromotionReadinessSnapshot_(employeeId) {
+  var info = getPromotionCompetenciesForUser_(employeeId);
+  var existing = readTable(TABLES.PROMOTION_RATINGS.name, TABLES.PROMOTION_RATINGS.headers).filter(function (r) {
+    return r.employeeId === employeeId;
+  });
+  var byCompetency = {};
+  existing.forEach(function (r) {
+    byCompetency[r.competencyId] = r;
+  });
+  return {
+    currentLevelName: info.currentLevelName,
+    targetLevelName: info.targetLevelName,
+    isTopLevel: info.isTopLevel,
+    targetMaturityMin: info.targetMaturityMin,
+    targetMaturityMax: info.targetMaturityMax,
+    ratings: info.options.map(function (o) {
+      var r = byCompetency[o.competency.id];
+      return {
+        competency: o.competency,
+        subLevel: r ? Number(r.subLevel) : null,
+        selfComment: r ? r.selfComment : "",
+      };
+    }),
+  };
+}
+
 /** Assembles the full nested Goal object (kras/kpis/ratings/history) for one goal id. */
 function getFullGoal_(goalId) {
   var goal = findOne_(TABLES.GOALS.name, TABLES.GOALS.headers, function (g) {
